@@ -1,25 +1,28 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const stocksSlice = createSlice({
-  name: 'stocks',
+  name: "stocks",
   initialState: {
-    stocks: [],  // Array to store stocks
-    loading: false,
+    availableStocks: [],
+    ownedStocks: [],
     error: null,
+    loading: false,
   },
   reducers: {
-    setLoading: (state, action) => {
-      state.loading = action.payload;
+    setAvailableStocks: (state, action) => {
+      state.availableStocks = action.payload;
     },
-    setStocks: (state, action) => {
-      state.stocks = action.payload; // Assign the array of stocks to state
+    setOwnedStocks: (state, action) => {
+      state.ownedStocks = action.payload;
     },
     setError: (state, action) => {
       state.error = action.payload;
     },
+    setLoading: (state, action) => {
+      state.loading = action.payload;
+    },
   },
 });
 
-export const { setLoading, setStocks, setError } = stocksSlice.actions;
-
+export const { setAvailableStocks, setOwnedStocks, setError, setLoading } = stocksSlice.actions;
 export default stocksSlice.reducer;

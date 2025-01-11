@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 export default function StockForm({ stock, onSubmit, onClose }) {
   const [quantity, setQuantity] = useState(1);
-  const [buyPrice, setBuyPrice] = useState(stock.price);
+  const [buyPrice, setBuyPrice] = useState(stock.avg_price);
 
   const handleSubmit = (e) => {
     e.preventDefault();

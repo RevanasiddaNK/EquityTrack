@@ -25,11 +25,11 @@ export default function StockList({ stocks, onBuy, searchQuery, onSearchChange }
                 <h3 className="font-semibold text-lg">{stock.name}</h3>
                 <p className="text-gray-600">{stock.ticker}</p>
               </div>
-              <span className="text-lg font-bold text-green-600">${stock.price}</span>
+              <span className="text-lg font-bold text-blue-600">${stock.avg_price}</span>
             </div>
             <button
               onClick={() => onBuy(stock)}
-              className="w-full mt-2 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors"
+              className="w-full mt-2 bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition-colors"
             >
               Buy Stock
             </button>

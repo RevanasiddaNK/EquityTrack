@@ -1,13 +1,16 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 
-export default function Dashboard({ portfolio, onSell, onBuyMore }) {
+export default function Holdings({ portfolio, onSell, onBuyMore }) {
+
+  //console.log("portfolio", portfolio);
+
   const totalInvested = portfolio.reduce((sum, stock) => 
-    sum + (stock.buyPrice || 0) * (stock.quantity || 0), 0
+    sum + (stock.invested || 0),0
   );
-  
+
   const currentValue = portfolio.reduce((sum, stock) => 
-    sum + stock.price * (stock.quantity || 0), 0
+    sum + (stock.current || 0), 0
   );
   
   const totalReturns = currentValue - totalInvested;
@@ -52,7 +55,7 @@ export default function Dashboard({ portfolio, onSell, onBuyMore }) {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">shares</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Buy Price</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Price</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Returns</th>
@@ -61,16 +64,16 @@ export default function Dashboard({ portfolio, onSell, onBuyMore }) {
           </thead>
           <tbody className="divide-y divide-gray-200">
             {portfolio.map((stock) => (
-              <tr key={stock.id}>
+              <tr key={stock._id}>
                 <td className="px-6 py-4">
                   <div>
                     <div className="font-medium text-gray-900">{stock.name}</div>
                     <div className="text-gray-500">{stock.ticker}</div>
                   </div>
                 </td>
-                <td className="px-6 py-4">{stock.quantity}</td>
-                <td className="px-6 py-4">${stock.buyPrice}</td>
-                <td className="px-6 py-4">${stock.price}</td>
+                <td className="px-6 py-4">{stock.shares}</td>
+                <td className="px-6 py-4">${stock.avg_price}</td>
+                <td className="px-6 py-4">${stock.mkt_price}</td>
                 <td className="px-6 py-4">
                   <span className={stock.returns && stock.returns >= 0 ? 'text-green-500' : 'text-red-500'}>
                     ${stock.returns?.toFixed(2)} ({stock.returnsPercentage?.toFixed(2)}%)
@@ -79,13 +82,13 @@ export default function Dashboard({ portfolio, onSell, onBuyMore }) {
                 <td className="px-6 py-4">
                   <button
                     onClick={() => onBuyMore(stock)}
-                    className="mr-2 text-blue-600 hover:text-blue-800"
+                    className="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
                   >
-                    Buy More
+                    Buy
                   </button>
                   <button
                     onClick={() => onSell(stock.id)}
-                    className="text-red-600 hover:text-red-800"
+                    className="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 "
                   >
                     Sell
                   </button>

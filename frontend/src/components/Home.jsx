@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import StockList from './StockList';
+import toast from 'react-hot-toast';
 import Holdings from './Holdings';
 import StockForm from './StockForm';
 import UserProfile from './UserProfile';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import useGetStocks from '../hooks/useGetStocks';
+import { useDispatch, useSelector } from 'react-redux'
+import { setLoading, setUser } from '@/redux/authSlice'
+import axios from 'axios';
 
 function Home() {
   const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // Redirect to login if user is undefined
   if (user === undefined) {
@@ -23,16 +27,27 @@ function Home() {
   const [walletBalance, setWalletBalance] = useState(10000);
 
   // Use the custom hook inside the component
-  const { stocks, loading, error } = useGetStocks(); // Fetch stock data using custom hook
+  useGetStocks(); // This will fetch and set available and owned stocks in Redux
+
+  // Access the stocks from Redux state
+  const availableStocks = useSelector((state) => state.stocks.availableStocks);
+  const ownedStocks = useSelector((state) => state.stocks.ownedStocks);
+  
+  // console.log("ownedStocks", ownedStocks);
+  // console.log("availableStocks", availableStocks);
+
+  useEffect(()=>{
+    setPortfolio(ownedStocks);
+  },[ownedStocks]);
+
 
   // Filter stocks based on search query
   const filterStocks = () => {
-    console.log("stocks", stocks);
-    if (!stocks || stocks.length === 0) {
+    if (!availableStocks || availableStocks.length === 0) {
       return []; // Return an empty array if stocks are not defined or empty
     }
 
-    return stocks.filter(
+    return availableStocks.filter(
       (stock) =>
         stock.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         stock.ticker.toLowerCase().includes(searchQuery.toLowerCase())
@@ -40,41 +55,89 @@ function Home() {
   };
 
   const handleBuy = (stock) => {
+    console.log("handleBuy", stock);
     setSelectedStock(stock);
   };
 
-  const handleBuySubmit = (quantity, buyPrice) => {
-    if (selectedStock) {
-      const totalCost = quantity * buyPrice;
+  const handleBuyMore = (stock) => {
+    console.log("handleBuyMore",stock)
+    setSelectedStock(stock);
+  };
 
-      if (totalCost > walletBalance) {
-        alert('Insufficient funds in wallet');
-        return;
+  const handleBuySubmit = async (shares, buyPrice) => {
+    console.log("selectedStock",selectedStock);
+    if (!selectedStock) {
+      toast.error('No stock selected');
+      return;
+    }
+
+    const totalCost = shares * buyPrice;
+
+    if (totalCost > walletBalance) {
+      toast.error('Insufficient funds in wallet');
+      return;
+    }
+
+    const totalValue = shares * selectedStock.avg_price;
+    const returns = totalValue - totalCost;
+    const returnsPercentage = (returns / totalCost) * 100;
+
+    const newStock = {
+      ...selectedStock,
+      shares,
+      buyPrice,
+      totalValue,
+      returns,
+      returnsPercentage,
+    };
+
+    const inputStock = {
+      name: selectedStock.name,
+      ticker: selectedStock.ticker, // Assuming ticker is same as name here; adjust if needed
+      shares,
+      avg_price: buyPrice,
+      mkt_price: selectedStock.avg_price,
+      current: totalValue,
+      invested: shares * buyPrice,
+      returns,
+      returnsPercentage,
+    };
+
+    try {
+      dispatch(setLoading(true));
+
+      // Sending request to backend
+      const res = await axios.post(
+        `http://localhost:5000/api/v1/stocks/add/${user._id}`, // Ensure `user` contains a valid ID
+        inputStock,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
+      if (res?.data?.success) {
+        toast.success(res.data.message);
+        // Update portfolio on success
+        setPortfolio((prevPortfolio) => [...prevPortfolio, newStock]);
+        setWalletBalance((prevBalance) => prevBalance - totalCost);
+        setSelectedStock(null);
+      } else {
+        toast.error(res?.data?.message || 'Failed to add stock');
       }
-
-      const totalValue = quantity * selectedStock.price;
-      const returns = totalValue - totalCost;
-      const returnsPercentage = (returns / totalCost) * 100;
-
-      const newStock = {
-        ...selectedStock,
-        quantity,
-        buyPrice,
-        totalValue,
-        returns,
-        returnsPercentage,
-      };
-
-      setPortfolio([...portfolio, newStock]);
-      setWalletBalance((prevBalance) => prevBalance - totalCost);
-      setSelectedStock(null);
+    } catch (error) {
+      console.error('Error during stock purchase:', error);
+      const errorMessage = error.response?.data?.message || 'Something went wrong';
+      toast.error(errorMessage);
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
   const handleSell = (stockId) => {
     const stockToSell = portfolio.find((stock) => stock.id === stockId);
     if (stockToSell) {
-      const saleValue = stockToSell.price * stockToSell.quantity;
+      const saleValue = stockToSell.avg_price * stockToSell.shares;
       setWalletBalance((prevBalance) => prevBalance + saleValue);
       setPortfolio(portfolio.filter((stock) => stock.id !== stockId));
     }
@@ -106,7 +169,7 @@ function Home() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <span className="text-xl font-bold text-gray-900">GainGuru</span>
+            <span className="text-xl font-bold text-gray-900">GainGuru</span>
               <div className="ml-8">
                 <button
                   onClick={() => setView('home')}
@@ -139,9 +202,6 @@ function Home() {
       </nav>
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {loading && <p>Loading stocks...</p>}
-        {error && <p className="text-red-500">{error}</p>}
-
         {view === 'home' ? (
           <StockList
             stocks={filterStocks()}
@@ -150,7 +210,7 @@ function Home() {
             onSearchChange={setSearchQuery}
           />
         ) : (
-          <Holdings portfolio={portfolio} onSell={handleSell} />
+          <Holdings portfolio={portfolio} onSell={handleSell} onBuyMore={handleBuyMore} />
         )}
 
         {selectedStock && (
