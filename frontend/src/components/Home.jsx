@@ -1,34 +1,43 @@
 import React, { useState } from 'react';
-import { TrendingUp } from 'lucide-react';
-import { availableStocks } from '../data/mockStocks';
 import StockList from './StockList';
 import Holdings from './Holdings';
 import StockForm from './StockForm';
 import UserProfile from './UserProfile';
-
-import toast from 'react-hot-toast'
-import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import useGetStocks from '../hooks/useGetStocks';
 
 function Home() {
-  
-  const { user } = useSelector(store => store.auth);
+  const { user } = useSelector((store) => store.auth);
+  const navigate = useNavigate();
+
+  // Redirect to login if user is undefined
+  if (user === undefined) {
+    navigate('/'); // Redirect to login or home page
+  }
 
   const [view, setView] = useState('home');
   const [portfolio, setPortfolio] = useState([]);
   const [selectedStock, setSelectedStock] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [walletBalance, setWalletBalance] = useState(10000);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  // Use the custom hook inside the component
+  const { stocks, loading, error } = useGetStocks(); // Fetch stock data using custom hook
 
-  const handleLogout = () => {
-    console.log("user Loggedout!");
+  // Filter stocks based on search query
+  const filterStocks = () => {
+    console.log("stocks", stocks);
+    if (!stocks || stocks.length === 0) {
+      return []; // Return an empty array if stocks are not defined or empty
+    }
+
+    return stocks.filter(
+      (stock) =>
+        stock.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        stock.ticker.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   };
-
-  const filteredStocks = availableStocks.filter(stock =>
-    stock.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    stock.ticker.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   const handleBuy = (stock) => {
     setSelectedStock(stock);
@@ -37,15 +46,15 @@ function Home() {
   const handleBuySubmit = (quantity, buyPrice) => {
     if (selectedStock) {
       const totalCost = quantity * buyPrice;
-      
+
       if (totalCost > walletBalance) {
         alert('Insufficient funds in wallet');
         return;
       }
 
       const totalValue = quantity * selectedStock.price;
-      const returns = totalValue - (quantity * buyPrice);
-      const returnsPercentage = (returns / (quantity * buyPrice)) * 100;
+      const returns = totalValue - totalCost;
+      const returnsPercentage = (returns / totalCost) * 100;
 
       const newStock = {
         ...selectedStock,
@@ -57,22 +66,18 @@ function Home() {
       };
 
       setPortfolio([...portfolio, newStock]);
-      setWalletBalance(prevBalance => prevBalance - totalCost);
+      setWalletBalance((prevBalance) => prevBalance - totalCost);
       setSelectedStock(null);
     }
   };
 
   const handleSell = (stockId) => {
-    const stockToSell = portfolio.find(stock => stock.id === stockId);
+    const stockToSell = portfolio.find((stock) => stock.id === stockId);
     if (stockToSell) {
       const saleValue = stockToSell.price * stockToSell.quantity;
-      setWalletBalance(prevBalance => prevBalance + saleValue);
-      setPortfolio(portfolio.filter(stock => stock.id !== stockId));
+      setWalletBalance((prevBalance) => prevBalance + saleValue);
+      setPortfolio(portfolio.filter((stock) => stock.id !== stockId));
     }
-  };
-
-  const handleBuyMore = (stock) => {
-    setSelectedStock(stock);
   };
 
   const handleAddFunds = (amount) => {
@@ -80,7 +85,7 @@ function Home() {
       alert('Please enter a valid amount');
       return;
     }
-    setWalletBalance(prevBalance => prevBalance + amount);
+    setWalletBalance((prevBalance) => prevBalance + amount);
   };
 
   const handleWithdraw = (amount) => {
@@ -92,10 +97,8 @@ function Home() {
       alert('Insufficient funds in wallet');
       return;
     }
-    setWalletBalance(prevBalance => prevBalance - amount);
+    setWalletBalance((prevBalance) => prevBalance - amount);
   };
-
-
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -103,7 +106,6 @@ function Home() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <TrendingUp className="h-8 w-8 text-blue-600 mr-2" />
               <span className="text-xl font-bold text-gray-900">GainGuru</span>
               <div className="ml-8">
                 <button
@@ -120,7 +122,7 @@ function Home() {
                     view === 'Holdings' ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500'
                   }`}
                 >
-                 Holdings
+                  Holdings
                 </button>
               </div>
             </div>
@@ -137,27 +139,22 @@ function Home() {
       </nav>
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {loading && <p>Loading stocks...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+
         {view === 'home' ? (
           <StockList
-            stocks={filteredStocks}
+            stocks={filterStocks()}
             onBuy={handleBuy}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
           />
         ) : (
-          <Holdings
-            portfolio={portfolio}
-            onSell={handleSell}
-            onBuyMore={handleBuyMore}
-          />
+          <Holdings portfolio={portfolio} onSell={handleSell} />
         )}
 
         {selectedStock && (
-          <StockForm
-            stock={selectedStock}
-            onSubmit={handleBuySubmit}
-            onClose={() => setSelectedStock(null)}
-          />
+          <StockForm stock={selectedStock} onSubmit={handleBuySubmit} onClose={() => setSelectedStock(null)} />
         )}
       </main>
     </div>

@@ -7,10 +7,12 @@ dotenv.config({});
 import userRoute from "./routes/user.route.js";
 import stockRoute from "./routes/stock.route.js";
 import stockPriceRoute from "./routes/stockprice.route.js";
+import fetch from "node-fetch";
 
 
 const app = express();
 
+const API_KEY = process.env.ALPHA_VANTAGE_API_KEY;
 
 
 // middleware
@@ -37,3 +39,4 @@ app.listen(PORT,()=>{
     connectDB();
     console.log(`server running at port ${PORT}`);
 })
+
