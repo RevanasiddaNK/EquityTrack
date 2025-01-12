@@ -8,7 +8,6 @@ import toast from 'react-hot-toast'
 import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 
-
 export default function UserProfile({ balance, onAddFunds, onWithdraw, userEmail }) {
   const [isOpen, setIsOpen] = useState(false);
   const [amount, setAmount] = useState('');
@@ -19,34 +18,34 @@ export default function UserProfile({ balance, onAddFunds, onWithdraw, userEmail
   const navigate = useNavigate();
 
   const logoutHandler = async (e) => {
-      e.preventDefault();
-      try {
-          dispatch(setLoading(true));
-          const res = await axios.post('http://localhost:5000/api/v1/user/logout',{
-              headers: {
-                  "Content-Type": "application/json"
-              },
-              withCredentials: true,
+    e.preventDefault();
+    try {
+        dispatch(setLoading(true));
+        const res = await axios.post('http://localhost:5000/api/v1/user/logout',{
+            headers: {
+                "Content-Type": "application/json"
+            },
+            withCredentials: true,
 
-          });
+        });
 
+    
       
-        
-          if (res.data.success) {
-              dispatch(setUser(null));
-              dispatch(setAvailableStocks([]));
-              dispatch(setOwnedStocks([]));
-              navigate("/")
-              //navigate("/home", { state: { user: res.data.user } });
-              toast.success(res.data.message);
-          }
-      } catch (error) {
-          console.log(error);
-          toast.error(error.response.data.message);
-      } finally {
-          dispatch(setLoading(false));
-      }
-  };
+        if (res.data.success) {
+            dispatch(setUser(null));
+            dispatch(setAvailableStocks([]));
+            dispatch(setOwnedStocks([]));
+            navigate("/")
+            //navigate("/home", { state: { user: res.data.user } });
+            toast.success(res.data.message);
+        }
+    } catch (error) {
+        console.log(error);
+        toast.error(error.response.data.message);
+    } finally {
+        dispatch(setLoading(false));
+    }
+};
 
   const handleTransaction = (e) => {
       e.preventDefault();

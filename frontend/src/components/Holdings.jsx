@@ -10,9 +10,6 @@ import toast from 'react-hot-toast';
 
 export default function Holdings({ portfolio, onBuyMore }) {
 
-  //console.log("portfolio", portfolio);
-
-
   const [isSellingStock, setIsSellingStock] = useState(null);
   const dispatch = useDispatch();
 

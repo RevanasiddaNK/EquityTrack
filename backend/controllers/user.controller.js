@@ -1,8 +1,6 @@
 import  {User} from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-// import getDataUri from "../utils/datauri.js";
-// import cloudinary from "../utils/cloudinary.js";
 
 export const register = async(req, res) => {
     try {
@@ -52,7 +50,6 @@ export const login = async(req, res) => {
     try {
     
         const { email, password} = req.body;
-
         if (!email || !password) {
             
             return res.status(400).json({
@@ -60,8 +57,7 @@ export const login = async(req, res) => {
                 success: false,
             });
         }
-
-       
+  
         let user = await User.findOne({ email });
         if (!user) {
            
@@ -71,7 +67,6 @@ export const login = async(req, res) => {
             });
         }
 
-        
         const isPasswordMatch = await bcrypt.compare(password, user.password);
         if (!isPasswordMatch) {
             
@@ -81,7 +76,6 @@ export const login = async(req, res) => {
             });
         }       
 
-      
         const tokenData = { userId: user._id };
         const token = jwt.sign(tokenData, process.env.SECRET_KEY, { expiresIn: '1d' });
 
@@ -114,7 +108,6 @@ export const login = async(req, res) => {
     }
 };
 
-
 export const logout = async(req, res) => {
     try {
         return res.status(200).cookie("token", "", { maxAge: 0 }).json({
@@ -124,39 +117,76 @@ export const logout = async(req, res) => {
     } catch (error) {
         console.log(error);
     }
-}
+};
 
-export const updateProfile = async(req, res) => {
+export const addFunds = async (req, res) => {
     try {
-        const { fullname, email} = req.body;
-
-        const userId = req.id;
-        let user = await User.findById(userId);
+        // Get user ID and the amount to add from request body
+        const { userId, amountToAdd } = req.body;
   
+        if (!userId || !amountToAdd) {
+            return res.status(400).json({ success: false, error: 'User ID and amount are required.' });
+        }
+  
+        // Find user by userId
+        const user = await User.findById(userId);
+        
         if (!user) {
-            return res.status(400).json({
-                message: "User not found.",
-                success: false
-            })
+            return res.status(404).json({ success: false, error: 'User not found.' });
         }
-        // updating data
-        if (fullname) user.fullname = fullname
-        if (email) user.email = email
-
+  
+        // Ensure the amount to add is positive
+        if (amountToAdd <= 0) {
+            return res.status(400).json({ success: false, error: 'Amount to add must be greater than zero.' });
+        }
+  
+        // Add funds to user's wallet
+        user.walletBalance += amountToAdd;
+  
+        // Save the updated user record
         await user.save();
-
-        user = {
-            _id: user._id,
-            fullname: user.fullname,
-            email: user.email,
-        }
-
-        return res.status(200).json({
-            message: "Profile updated successfully.",
-            user,
-            success: true
-        })
+  
+        return res.status(200).json({ success: true,message: `Successfully added ${amountToAdd} to wallet.`,  walletBalance: user.walletBalance });
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        return res.status(500).json({ success: false, error: 'An error occurred while adding funds.' });
     }
-}
+};
+  
+export const withdrawFunds = async (req, res) => {
+    try {
+        // Get user ID and the amount to withdraw from request body
+        const { userId, amountToWithdraw } = req.body;
+  
+        if (!userId || !amountToWithdraw) {
+            return res.status(400).json({ success: false, error: 'User ID and amount are required.' });
+        }
+  
+        // Find user by userId
+        const user = await User.findById(userId);
+        
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found.' });
+        }
+  
+        // Ensure the amount to withdraw is positive and less than or equal to the wallet balance
+        if (amountToWithdraw <= 0) {
+            return res.status(400).json({ success: false, error: 'Amount to withdraw must be greater than zero.' });
+        }
+  
+        if (user.walletBalance < amountToWithdraw) {
+            return res.status(400).json({ success: false, error: 'Insufficient funds in the wallet.' });
+        }
+  
+        // Subtract funds from the user's wallet
+        user.walletBalance -= amountToWithdraw;
+  
+        // Save the updated user record
+        await user.save();
+  
+        return res.status(200).json({ success: true, message: `Successfully withdrew ${amountToWithdraw} from wallet.`,  walletBalance: user.walletBalance});
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, error: 'An error occurred while withdrawing funds.' });
+    }
+};

@@ -12,22 +12,28 @@ import { setOwnedStocks, setAvailableStocks} from '../redux/stocksSlice'
 import axios from 'axios';
 
 function Home() {
-  const { user } = useSelector((store) => store.auth);
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Redirect to login if user is undefined
-  if (user === undefined) {
-    navigate('/'); // Redirect to login or home page
+
+
+  useGetStocks() 
+
+  const { user } = useSelector((store) => store.auth);
+  if(user === undefined) {
+    navigate('/');
   }
 
   const [view, setView] = useState('home');
   const [portfolio, setPortfolio] = useState([]);
   const [selectedStock, setSelectedStock] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [walletBalance, setWalletBalance] = useState(10000);
+  const [walletBalance, setWalletBalance] = useState(0);
 
-  useGetStocks() 
+  useEffect(()=>{
+    setWalletBalance(user.walletBalance)
+  })
 
   // Access the stocks from Redux state
   const availableStocks = useSelector((state) => state.stocks.availableStocks);
@@ -117,7 +123,7 @@ function Home() {
 
       if (res?.data?.success) {
         toast.success(res.data.message);
-        setWalletBalance((prevBalance) => prevBalance - totalCost);
+        setWalletBalance(res.data.walletBalance);
         setSelectedStock(null);
         dispatch(setOwnedStocks([]))
       } else {
@@ -125,7 +131,7 @@ function Home() {
       }
     } catch (error) {
       console.error('Error during stock purchase:', error);
-      const errorMessage = error.response?.data?.message || 'Something went wrong';
+      const errorMessage = error.response?.data?.error || 'Something went wrong';
       toast.error(errorMessage);
     } finally {
       dispatch(setLoading(false));
@@ -133,25 +139,92 @@ function Home() {
     
   };
 
-  const handleAddFunds = (amount) => {
+  const handleAddFunds = async (amount) => {
+
     if (amount <= 0) {
       alert('Please enter a valid amount');
       return;
     }
-    setWalletBalance((prevBalance) => prevBalance + amount);
+
+
+    try {
+          dispatch(setLoading(true));
+
+          // Sending request to backend
+          const res = await axios.post(
+            'http://localhost:5000/api/v1/user/add',
+            {
+              userId : user._id, amountToAdd : amount
+            },
+            {
+              headers: { "Content-Type": "application/json" },
+              withCredentials: true,
+            }
+          );
+
+          if (res?.data?.success) {
+            toast.success(res.data.message);
+            setWalletBalance(res.data.walletBalance);
+            setSelectedStock(null);
+          } 
+          else{
+            toast.error(res?.data?.error || 'Failed to add stock');
+          }
+    } 
+    catch (error) {
+      console.error('Error during stock purchase:', error);
+      const errorMessage = error.response?.data?.error || 'Something went wrong';
+      toast.error(errorMessage);
+    } 
+    finally {
+      dispatch(setLoading(false));
+    }
+
   };
 
-  const handleWithdraw = (amount) => {
+  const handleWithdraw  = async (amount) => {
+
     if (amount <= 0) {
       alert('Please enter a valid amount');
       return;
     }
-    if (amount > walletBalance) {
-      alert('Insufficient funds in wallet');
-      return;
+
+    try {
+          dispatch(setLoading(true));
+
+          // Sending request to backend
+          const res = await axios.post(
+            'http://localhost:5000/api/v1/user/withdraw',
+            {
+              userId : user._id, amountToWithdraw : amount
+            },
+            {
+              headers: { "Content-Type": "application/json" },
+              withCredentials: true,
+            }
+          );
+
+          if (res?.data?.success) {
+            toast.success(res.data.message);
+            setWalletBalance(res.data.walletBalance);
+            setSelectedStock(null);
+          } 
+          else {
+            toast.error(res?.data?.error || 'Failed to add stock');
+          }
+    } 
+    catch (error) {
+      console.error('Error during stock purchase:', error);
+      const errorMessage = error.response?.data?.error || 'Something went wrong';
+      toast.error(errorMessage);
+    } 
+    finally {
+      dispatch(setLoading(false));
     }
-    setWalletBalance((prevBalance) => prevBalance - amount);
+
   };
+
+  
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -200,7 +273,7 @@ function Home() {
             onSearchChange={setSearchQuery}
           />
         ) : (
-          <Holdings portfolio={portfolio}  onBuyMore={handleBuyMore} />
+          <Holdings portfolio={portfolio}  onBuyMore={handleBuyMore} setWalletBalance/>
         )}
 
         {selectedStock && (

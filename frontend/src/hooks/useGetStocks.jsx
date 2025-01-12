@@ -38,7 +38,7 @@ const useGetStocks = () => {
 
     const interval = setInterval(() => {
       fetchAllStocks(); // Fetch every 10 seconds
-    }, 1000*5); 
+    }, 1000); 
 
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
