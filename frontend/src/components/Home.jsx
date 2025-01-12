@@ -7,8 +7,8 @@ import UserProfile from './UserProfile';
 import { useNavigate } from 'react-router-dom';
 import useGetStocks from '../hooks/useGetStocks';
 import { useDispatch, useSelector } from 'react-redux'
-import { setLoading, setUser } from '@/redux/authSlice'
-import { setOwnedStocks, setAvailableStocks} from '../redux/stocksSlice'
+import {  setWalletBalance } from '@/redux/authSlice'
+import { setLoading,setOwnedStocks, setAvailableStocks} from '../redux/stocksSlice'
 import axios from 'axios';
 
 function Home() {
@@ -16,9 +16,7 @@ function Home() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-
-
-  useGetStocks() 
+  useGetStocks();
 
   const { user } = useSelector((store) => store.auth);
   if(user === undefined) {
@@ -29,23 +27,15 @@ function Home() {
   const [portfolio, setPortfolio] = useState([]);
   const [selectedStock, setSelectedStock] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [walletBalance, setWalletBalance] = useState(0);
 
-  useEffect(()=>{
-    setWalletBalance(user.walletBalance)
-  })
 
-  // Access the stocks from Redux state
   const availableStocks = useSelector((state) => state.stocks.availableStocks);
   const ownedStocks = useSelector((state) => state.stocks.ownedStocks);
-  
-  //console.log("ownedStocks", ownedStocks);
-  // console.log("availableStocks", availableStocks);
+  const walletBalance = useSelector((state) => state.stocks.walletBalance);
 
   useEffect(()=>{
     setPortfolio(ownedStocks);
   },[ownedStocks]);
-
 
   // Filter stocks based on search query
   const filterStocks = () => {
@@ -123,7 +113,7 @@ function Home() {
 
       if (res?.data?.success) {
         toast.success(res.data.message);
-        setWalletBalance(res.data.walletBalance);
+        dispatch(setWalletBalance(res.data.walletBalance));
         setSelectedStock(null);
         dispatch(setOwnedStocks([]))
       } else {
@@ -164,7 +154,7 @@ function Home() {
 
           if (res?.data?.success) {
             toast.success(res.data.message);
-            setWalletBalance(res.data.walletBalance);
+            dispatch(setWalletBalance(res.data.walletBalance));
             setSelectedStock(null);
           } 
           else{
@@ -206,7 +196,7 @@ function Home() {
 
           if (res?.data?.success) {
             toast.success(res.data.message);
-            setWalletBalance(res.data.walletBalance);
+            dispatch(setWalletBalance(res.data.walletBalance));
             setSelectedStock(null);
           } 
           else {
@@ -224,7 +214,7 @@ function Home() {
 
   };
 
-  
+ 
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -254,7 +244,7 @@ function Home() {
             </div>
             <div className="flex items-center">
               <UserProfile
-                balance={walletBalance}
+                walletBalance={walletBalance}
                 onAddFunds={handleAddFunds}
                 onWithdraw={handleWithdraw}
                 userEmail={user?.email}
@@ -273,7 +263,7 @@ function Home() {
             onSearchChange={setSearchQuery}
           />
         ) : (
-          <Holdings portfolio={portfolio}  onBuyMore={handleBuyMore} setWalletBalance/>
+          <Holdings portfolio={portfolio}  onBuyMore={handleBuyMore} />
         )}
 
         {selectedStock && (

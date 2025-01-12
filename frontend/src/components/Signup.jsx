@@ -4,7 +4,7 @@ import axios from 'axios'
 import { USER_API_END_POINT } from '@/utils/constant.js'
 import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
-import { setLoading, setUser } from '@/redux/authSlice'
+import { setLoading, setUser, setWalletBalance } from '@/redux/authSlice'
 import { Mail, Lock } from 'react-feather'; 
 
 const Signup = () => {
@@ -37,7 +37,8 @@ const Signup = () => {
 
             if (res.data.success) {
               dispatch(setUser(res.data.user));
-              navigate("/home", { state: { user: res.data.user } });
+              dispatch(setWalletBalance(res.data.user.walletBalance));
+              navigate("/home");
                 toast.success(res.data.message);
             }
         } catch (error) {

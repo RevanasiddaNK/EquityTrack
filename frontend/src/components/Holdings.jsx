@@ -1,10 +1,10 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import SellForm from './SellForm';
-import { useState , useEffect} from 'react';
-import useGetStocks from '../hooks/useGetStocks';
+import { useState } from 'react';
+
 import { useDispatch, useSelector } from 'react-redux'
-import { setLoading, setUser } from '@/redux/authSlice'
+import { setLoading,  setWalletBalance } from '@/redux/authSlice'
 import axios from "axios";
 import toast from 'react-hot-toast';
 
@@ -52,6 +52,8 @@ export default function Holdings({ portfolio, onBuyMore }) {
 
       if (res?.data?.success) {
         toast.success(res.data.message);
+
+        dispatch(setWalletBalance(res.data.walletBalance));
         setIsSellingStock(null);
       } else {
         toast.error(res?.data?.error || 'Failed to sell shares');

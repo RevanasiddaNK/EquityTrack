@@ -8,11 +8,14 @@ import toast from 'react-hot-toast'
 import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 
-export default function UserProfile({ balance, onAddFunds, onWithdraw, userEmail }) {
+export default function UserProfile({ onAddFunds, onWithdraw, userEmail }) {
+  
   const [isOpen, setIsOpen] = useState(false);
   const [amount, setAmount] = useState('');
   const [showFundsModal, setShowFundsModal] = useState(false);
   const [transactionType, setTransactionType] = useState('add');
+
+  const walletBalance = useSelector((state) => state.auth.walletBalance);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -29,8 +32,6 @@ export default function UserProfile({ balance, onAddFunds, onWithdraw, userEmail
 
         });
 
-    
-      
         if (res.data.success) {
             dispatch(setUser(null));
             dispatch(setAvailableStocks([]));
@@ -39,13 +40,14 @@ export default function UserProfile({ balance, onAddFunds, onWithdraw, userEmail
             //navigate("/home", { state: { user: res.data.user } });
             toast.success(res.data.message);
         }
+
     } catch (error) {
         console.log(error);
         toast.error(error.response.data.message);
     } finally {
         dispatch(setLoading(false));
     }
-};
+  };
 
   const handleTransaction = (e) => {
       e.preventDefault();
@@ -72,7 +74,7 @@ export default function UserProfile({ balance, onAddFunds, onWithdraw, userEmail
         >
           <div className="flex items-center">
             <Wallet className="h-5 w-5 mr-2" />
-            <span className="font-medium">${balance.toFixed(2)}</span>
+            <span className="font-medium">${walletBalance?.toFixed(2) || -1000}</span>
           </div>
           <ChevronDown className="h-4 w-4" />
         </button>
