@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import useGetStocks from '../hooks/useGetStocks';
 import { useDispatch, useSelector } from 'react-redux'
 import { setLoading, setUser } from '@/redux/authSlice'
+import { setOwnedStocks, setAvailableStocks} from '../redux/stocksSlice'
 import axios from 'axios';
 
 function Home() {
@@ -26,14 +27,13 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [walletBalance, setWalletBalance] = useState(10000);
 
-  // Use the custom hook inside the component
-  useGetStocks(); // This will fetch and set available and owned stocks in Redux
+  useGetStocks() 
 
   // Access the stocks from Redux state
   const availableStocks = useSelector((state) => state.stocks.availableStocks);
   const ownedStocks = useSelector((state) => state.stocks.ownedStocks);
   
-  // console.log("ownedStocks", ownedStocks);
+  //console.log("ownedStocks", ownedStocks);
   // console.log("availableStocks", availableStocks);
 
   useEffect(()=>{
@@ -55,23 +55,26 @@ function Home() {
   };
 
   const handleBuy = (stock) => {
-    console.log("handleBuy", stock);
+    //console.log("handleBuy", stock);
     setSelectedStock(stock);
   };
 
   const handleBuyMore = (stock) => {
-    console.log("handleBuyMore",stock)
-    setSelectedStock(stock);
+    //console.log("handleBuyMore",stock)
+    setSelectedStock({
+      ...stock.stock,
+      avg_price : stock.avg_price
+    });
   };
 
-  const handleBuySubmit = async (shares, buyPrice) => {
-    console.log("selectedStock",selectedStock);
+  const handleBuySubmit = async (shares) => {
+    //console.log("selectedStock",selectedStock);
     if (!selectedStock) {
       toast.error('No stock selected');
       return;
     }
 
-    const totalCost = shares * buyPrice;
+    const totalCost = shares * selectedStock.avg_price;
 
     if (totalCost > walletBalance) {
       toast.error('Insufficient funds in wallet');
@@ -85,7 +88,7 @@ function Home() {
     const newStock = {
       ...selectedStock,
       shares,
-      buyPrice,
+      buyPrice : selectedStock.avg_price,
       totalValue,
       returns,
       returnsPercentage,
@@ -95,12 +98,8 @@ function Home() {
       name: selectedStock.name,
       ticker: selectedStock.ticker, // Assuming ticker is same as name here; adjust if needed
       shares,
-      avg_price: buyPrice,
+      avg_price: selectedStock.avg_price,
       mkt_price: selectedStock.avg_price,
-      current: totalValue,
-      invested: shares * buyPrice,
-      returns,
-      returnsPercentage,
     };
 
     try {
@@ -118,10 +117,9 @@ function Home() {
 
       if (res?.data?.success) {
         toast.success(res.data.message);
-        // Update portfolio on success
-        setPortfolio((prevPortfolio) => [...prevPortfolio, newStock]);
         setWalletBalance((prevBalance) => prevBalance - totalCost);
         setSelectedStock(null);
+        dispatch(setOwnedStocks([]))
       } else {
         toast.error(res?.data?.message || 'Failed to add stock');
       }
@@ -132,15 +130,7 @@ function Home() {
     } finally {
       dispatch(setLoading(false));
     }
-  };
-
-  const handleSell = (stockId) => {
-    const stockToSell = portfolio.find((stock) => stock.id === stockId);
-    if (stockToSell) {
-      const saleValue = stockToSell.avg_price * stockToSell.shares;
-      setWalletBalance((prevBalance) => prevBalance + saleValue);
-      setPortfolio(portfolio.filter((stock) => stock.id !== stockId));
-    }
+    
   };
 
   const handleAddFunds = (amount) => {
@@ -210,7 +200,7 @@ function Home() {
             onSearchChange={setSearchQuery}
           />
         ) : (
-          <Holdings portfolio={portfolio} onSell={handleSell} onBuyMore={handleBuyMore} />
+          <Holdings portfolio={portfolio}  onBuyMore={handleBuyMore} />
         )}
 
         {selectedStock && (
@@ -219,6 +209,7 @@ function Home() {
       </main>
     </div>
   );
+
 }
 
 export default Home;

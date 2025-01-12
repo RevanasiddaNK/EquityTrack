@@ -4,7 +4,7 @@ import axios from 'axios'
 import { USER_API_END_POINT } from '@/utils/constant.js'
 import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
-import { setLoading } from '@/redux/authSlice'
+import { setLoading, setUser } from '@/redux/authSlice'
 import { Mail, Lock } from 'react-feather'; 
 
 const Signup = () => {
@@ -26,9 +26,6 @@ const Signup = () => {
     const submitHandler = async (e) => {
         e.preventDefault();
 
-        // Log the input to verify
-        console.log(input);
-
         try {
             dispatch(setLoading(true));
             
@@ -39,7 +36,8 @@ const Signup = () => {
             });
 
             if (res.data.success) {
-                navigate("/");
+              dispatch(setUser(res.data.user));
+              navigate("/home", { state: { user: res.data.user } });
                 toast.success(res.data.message);
             }
         } catch (error) {
@@ -52,7 +50,7 @@ const Signup = () => {
 
     useEffect(() => {
         if (user) {
-            navigate("/");
+          navigate('/home');
         }
     }, [user, navigate]);
 

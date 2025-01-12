@@ -1,9 +1,72 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import SellForm from './SellForm';
+import { useState , useEffect} from 'react';
+import useGetStocks from '../hooks/useGetStocks';
+import { useDispatch, useSelector } from 'react-redux'
+import { setLoading, setUser } from '@/redux/authSlice'
+import axios from "axios";
+import toast from 'react-hot-toast';
 
-export default function Holdings({ portfolio, onSell, onBuyMore }) {
+export default function Holdings({ portfolio, onBuyMore }) {
 
   //console.log("portfolio", portfolio);
+
+
+  const [isSellingStock, setIsSellingStock] = useState(null);
+  const dispatch = useDispatch();
+
+  const handleSellClickedStock = (stock) => {
+    setIsSellingStock(stock);
+  };
+
+  const handleClose = () => {
+    setIsSellingStock(null);
+  };
+
+  const { user } = useSelector((store) => store.auth);
+
+  const handleSellSubmit = async (quantity, sellPrice) => {
+    //console.log(`"Selling ${quantity} shares of ${isSellingStock.name} at $${sellPrice} each`);
+    
+    if (!isSellingStock) {
+      toast.error('No stock selected');
+      return;
+    }
+
+    try {
+      dispatch(setLoading(true));
+
+      const sellData = {
+        quantity,
+        stockTicker : isSellingStock.stock.ticker,
+        currentPrice : isSellingStock.avg_price,
+      }
+      
+      // Sending request to backend
+      const res = await axios.post(
+        `http://localhost:5000/api/v1/stocks/sell/${user._id}`,
+        sellData,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
+      if (res?.data?.success) {
+        toast.success(res.data.message);
+        setIsSellingStock(null);
+      } else {
+        toast.error(res?.data?.error || 'Failed to sell shares');
+      }
+    } catch (error) {
+      toast.error( error.response?.data?.error || 'Failed to sell shares');
+      console.error('Error during stock purchase:', error);
+      const errorMessage = error.response?.data?.error || 'Something went wrong';
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
   const totalInvested = portfolio.reduce((sum, stock) => 
     sum + (stock.invested || 0),0
@@ -67,8 +130,8 @@ export default function Holdings({ portfolio, onSell, onBuyMore }) {
               <tr key={stock._id}>
                 <td className="px-6 py-4">
                   <div>
-                    <div className="font-medium text-gray-900">{stock.name}</div>
-                    <div className="text-gray-500">{stock.ticker}</div>
+                    <div className="font-medium text-gray-900">{stock.stock.name}</div>
+                    <div className="text-gray-500">{stock.stock.ticker}</div>
                   </div>
                 </td>
                 <td className="px-6 py-4">{stock.shares}</td>
@@ -87,7 +150,7 @@ export default function Holdings({ portfolio, onSell, onBuyMore }) {
                     Buy
                   </button>
                   <button
-                    onClick={() => onSell(stock.id)}
+                     onClick={() => {handleSellClickedStock(stock)} }
                     className="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 "
                   >
                     Sell
@@ -97,6 +160,13 @@ export default function Holdings({ portfolio, onSell, onBuyMore }) {
             ))}
           </tbody>
         </table>
+        {isSellingStock && (
+        <SellForm
+          stock={isSellingStock}
+          onSubmit={handleSellSubmit}
+          onClose={handleClose}
+        />
+      )}
       </div>
     </div>
   );

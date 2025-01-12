@@ -38,11 +38,12 @@ const useGetStocks = () => {
 
     const interval = setInterval(() => {
       fetchAllStocks(); // Fetch every 10 seconds
-    }, 1000); // 10 seconds
+    }, 1000*5); 
 
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
   }, [dispatch]); // Empty dependency array means this useEffect runs on mount and whenever dispatch changes
+  
 };
 
 export default useGetStocks;

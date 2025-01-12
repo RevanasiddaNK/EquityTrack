@@ -1,4 +1,4 @@
-import { User } from "../models/user.model.js";
+import  {User} from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 // import getDataUri from "../utils/datauri.js";
@@ -7,8 +7,6 @@ import jwt from "jsonwebtoken";
 export const register = async(req, res) => {
     try {
         const { fullname, email,password} = req.body;
-
-        console.log(fullname, email,password);
 
         // Check if any required field is missing
         if (!fullname || !email) {
@@ -33,13 +31,11 @@ export const register = async(req, res) => {
             email,
             password: hashedPassword,
         });
+       
         return res.status(201).json({
             message: "Account created successfully.",
             success: true,
-            user: {
-                fullname: newUser.fullname,
-                email: newUser.email,
-            },
+            user: newUser
         });
     } catch (error) {
         console.error(error);
@@ -54,43 +50,41 @@ export const register = async(req, res) => {
 
 export const login = async(req, res) => {
     try {
-        console.log("Request body received:", req.body);
-
+    
         const { email, password} = req.body;
 
         if (!email || !password) {
-            console.log("Validation failed: Missing fields");
+            
             return res.status(400).json({
                 message: "Something is missing",
                 success: false,
             });
         }
 
-        console.log("Checking user existence");
+       
         let user = await User.findOne({ email });
         if (!user) {
-            console.log("User not found for email:", email);
+           
             return res.status(400).json({
                 message: "Incorrect email or password.",
                 success: false,
             });
         }
 
-        console.log("Comparing passwords");
+        
         const isPasswordMatch = await bcrypt.compare(password, user.password);
         if (!isPasswordMatch) {
-            console.log("Password mismatch for email:", email);
+            
             return res.status(400).json({
                 message: "Incorrect email or password.",
                 success: false,
             });
         }       
 
-        // console.log("Generating JWT");
+      
         const tokenData = { userId: user._id };
         const token = jwt.sign(tokenData, process.env.SECRET_KEY, { expiresIn: '1d' });
 
-        // console.log("Returning success response");
         return res
             .status(200)
             .cookie("token", token, {
@@ -104,7 +98,8 @@ export const login = async(req, res) => {
                 user,
                 success: true,
             });
-    } catch (error) {
+    } 
+    catch (error) {
         console.error("Error in login route:", {
             message: error.message,
             stack: error.stack,
@@ -137,7 +132,7 @@ export const updateProfile = async(req, res) => {
 
         const userId = req.id;
         let user = await User.findById(userId);
-        // console.log(userId)
+  
         if (!user) {
             return res.status(400).json({
                 message: "User not found.",
@@ -164,24 +159,4 @@ export const updateProfile = async(req, res) => {
     } catch (error) {
         console.log(error);
     }
-}
-
-    // Check if user is authenticated
-export const  authCheck = async (req, res) => {
-        try {
-            const authUserdata = await User.findById(req.id).select("-password");
-            console.log(authUserdata);
-            if (!authUserdata) {
-                console.log("Inside authcheck")
-                return res.status(400).json({
-                    message: "User not found",
-                    success: false,
-                });
-            }
-            console.log(authUserdata)
-            return res.status(200).json(authUserdata);
-        } catch (error) {
-            console.log(`Error in authCheck controller: ${error.message}`);
-            return res.status(500).json({ error: "Internal server error" });
-        }
 }

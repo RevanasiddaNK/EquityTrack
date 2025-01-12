@@ -1,76 +1,69 @@
-import { Stock } from "../models/stock.model.js";
-import { User } from "../models/user.model.js";
+import  {Stock}  from '../models/stock.model.js';
+import  {UserStock}  from '../models/userStock.model.js';
+import  {User}  from '../models/user.model.js';
 
 export const addStock = async (req, res) => {
-  console.log("Adding Stock to Portfolio");
 
   try {
     const { userId } = req.params;
+    const { name, ticker, shares, avg_price, mkt_price } = req.body;
 
-    const {
-      name, ticker, shares,
-      avg_price, mkt_price, current,
-      invested, returns, returnsPercentage
-    } = req.body;
-
-
-
-    // Validate that all required fields are numbers
-    if (
-      isNaN(shares) || 
-      isNaN(avg_price) || 
-      isNaN(mkt_price) || 
-      isNaN(invested) || 
-      isNaN(returns) || 
-      isNaN(returnsPercentage)
-    ) {
-      return res.status(400).json({ success: false, error: "Invalid numeric data" });
+    // Validate that numeric fields are numbers
+    if (isNaN(shares) || isNaN(avg_price) || isNaN(mkt_price)) {
+      return res.status(400).json({ success: false, error: 'Invalid numeric data' });
     }
 
-    // Convert input to numbers if they are strings or undefined
+    // Convert input to numbers
     const sharesNum = parseFloat(shares);
     const avgPriceNum = parseFloat(avg_price);
     const mktPriceNum = parseFloat(mkt_price);
-    const investedNum = parseFloat(invested);
-    const returnsNum = parseFloat(returns);
-    const returnsPercentageNum = parseFloat(returnsPercentage);
 
+    // Find the user
     const user = await User.findById(userId);
-
     if (!user) {
-      return res.status(404).json({ success: false, error: "User not found" });
+      return res.status(404).json({ success: false, error: 'User not found' });
     }
 
-    // Check if stock with the same ticker exists
-    let stock = await Stock.findOne({ ticker, user: userId });
+    // Check if stock with the same ticker exists in the Stock model
+    let stock = await Stock.findOne({ ticker });
 
-    if (stock) {
-      // Stock already exists, update its details
-      const newShares = stock.shares + sharesNum;
-      const newInvested = stock.invested + investedNum;
+    if (!stock) {
+      // If the stock doesn't exist, create a new Stock document
+      stock = await Stock.create({
+        name,
+        ticker,
+      });
+    }
+
+    // Check if the user already has this stock in their portfolio
+    let userStock = await UserStock.findOne({ stock: stock._id, user: userId });
+
+    if (userStock) {
+      // Update existing UserStock entry
+      const newShares = userStock.shares + sharesNum;
+      const newInvested = userStock.invested + sharesNum * avgPriceNum;
       const newAvgPrice = newInvested / newShares;
       const newCurrent = newShares * mktPriceNum;
       const newReturns = newCurrent - newInvested;
       const newReturnsPercentage = (newReturns / newInvested) * 100;
 
-      // Update stock with new values
-      stock.shares = parseFloat(newShares.toFixed(2));
-      stock.avg_price = parseFloat(newAvgPrice.toFixed(2));
-      stock.invested = parseFloat(newInvested.toFixed(2));
-      stock.current = parseFloat(newCurrent.toFixed(2));
-      stock.returns = parseFloat(newReturns.toFixed(2));
-      stock.returnsPercentage = parseFloat(newReturnsPercentage.toFixed(2));
-      stock.mkt_price = parseFloat(mktPriceNum.toFixed(2));
+      userStock.shares = parseFloat(newShares.toFixed(2));
+      userStock.avg_price = parseFloat(newAvgPrice.toFixed(2));
+      userStock.invested = parseFloat(newInvested.toFixed(2));
+      userStock.current = parseFloat(newCurrent.toFixed(2));
+      userStock.returns = parseFloat(newReturns.toFixed(2));
+      userStock.returnsPercentage = parseFloat(newReturnsPercentage.toFixed(2));
+      userStock.mkt_price = parseFloat(mktPriceNum.toFixed(2));
 
-      await stock.save();
+      await userStock.save();
 
-      return res.status(200).json({ success: true, message: "Stock updated successfully", stock });
+      return res.status(200).json({ success: true, message: 'Stock updated successfully', userStock });
     }
 
-    // If stock does not exist, create a new one
-    stock = await Stock.create({
-      name,
-      ticker,
+    // If UserStock entry doesn't exist, create a new one
+    userStock = await UserStock.create({
+      stock: stock._id,
+      user: userId,
       shares: parseFloat(sharesNum.toFixed(2)),
       avg_price: parseFloat(avgPriceNum.toFixed(2)),
       mkt_price: parseFloat(mktPriceNum.toFixed(2)),
@@ -78,208 +71,239 @@ export const addStock = async (req, res) => {
       invested: parseFloat((sharesNum * avgPriceNum).toFixed(2)),
       returns: parseFloat(((sharesNum * mktPriceNum) - (sharesNum * avgPriceNum)).toFixed(2)),
       returnsPercentage: parseFloat((((sharesNum * mktPriceNum - sharesNum * avgPriceNum) / (sharesNum * avgPriceNum)) * 100).toFixed(2)),
-      user: userId
     });
 
-    // Add stock to user's portfolio
-    user.stocks.push(stock._id);
+    // Add the stock to the user's portfolio
+    user.stocks = user.stocks || [];
+    user.stocks.push(userStock._id);
     await user.save();
 
-    res.status(201).json({ success: true, message: "Stock added successfully", stock });
+    res.status(201).json({ success: true, message: 'Stock added successfully', userStock });
   } catch (error) {
     console.error(error);
     res.status(400).json({ success: false, error: error.message });
   }
 };
 
-
 export const sellStocks = async (req, res) => {
-  console.log("Inside sellStocks Controller");
+  
   try {
     const { userId } = req.params;
-
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ success: false, error: "User not found" });
-    }
-
     const { quantity, stockTicker } = req.body;
 
-    const stock = await Stock.findOne({ ticker: stockTicker });
-    // console.log("Selling stock", stock)
-
-    if (!stock) {
-      return res.status(404).json({ success: false, error: "Stock not found" });
+    // Validate numeric input
+    const quantityNum = parseFloat(quantity);
+    if (isNaN(quantityNum) || quantityNum <= 0) {
+      return res.status(400).json({ success: false, error: 'Invalid quantity provided' });
     }
 
-    if (stock.shares < quantity) {
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    // Find the stock
+    const stock = await Stock.findOne({ ticker: stockTicker });
+    if (!stock) {
+      return res.status(404).json({ success: false, error: 'Stock not found' });
+    }
+
+    // Find the user's stock entry
+    const userStock = await UserStock.findOne({ stock: stock._id, user: userId });
+    if (!userStock) {
+      return res.status(404).json({ success: false, error: "You don't own this stock" });
+    }
+
+    // Check if the user has enough shares to sell
+    if (userStock.shares < quantityNum) {
       return res.status(400).json({
         success: false,
         error: "Insufficient stocks: You don't have enough shares to complete this sale.",
       });
     }
 
-    // Calculate the remaining shares
-    const remainingShares = (stock.shares - quantity);
-    const current = (stock.current - (quantity * stock.avg_price)).toFixed(2);
-    const invested = (stock.invested - (quantity * stock.avg_price)).toFixed(2);
-    const returns = (current - invested).toFixed(2);
-    
+    // Calculate the remaining shares and update details
+    const remainingShares = userStock.shares - quantityNum;
+    const invested = userStock.invested - quantityNum * userStock.avg_price;
+    const current = remainingShares * userStock.mkt_price;
+    const returns = current - invested;
 
     let returnsPercentage = 0;
     if (invested !== 0) {
-      returnsPercentage = ((returns / invested) * 100).toFixed(2);
+      returnsPercentage = (returns / invested) * 100;
     }
 
-    if (Math.abs(remainingShares) < 0.01) {  // Use a small tolerance for floating-point comparison
-      await Stock.deleteOne({ ticker: stockTicker });
-      return res.status(200).json({ success: true, message: "Shares sold successfully" });
+    // If all shares are sold, delete the UserStock entry
+    if (remainingShares <= 0) {
+      await UserStock.deleteOne({ _id: userStock._id });
+
+      // Remove the stock reference from the user's portfolio
+      user.stocks = user.stocks.filter((stockId) => stockId.toString() !== userStock._id.toString());
+      await user.save();
+
+      return res.status(200).json({ success: true, message: 'All shares sold successfully' });
     }
-    
-   
 
-    // Update the stock with the new values
-    await Stock.updateOne(
-      { ticker: stockTicker },
-      {
-        $set: {
-          shares: remainingShares,
-          current: current,
-          invested: invested,
-          returns: returns,
-          returnsPercentage :returnsPercentage || 0
-        },
-      }
-    );
+    // Update the UserStock entry with new values
+    userStock.shares = parseFloat(remainingShares.toFixed(2));
+    userStock.invested = parseFloat(invested.toFixed(2));
+    userStock.current = parseFloat(current.toFixed(2));
+    userStock.returns = parseFloat(returns.toFixed(2));
+    userStock.returnsPercentage = parseFloat(returnsPercentage.toFixed(2));
 
-    return res.status(200).json({ success: true, message: "Shares sold successfully" });
-  } 
-  catch (error) {
+    await userStock.save();
 
-    console.log("error at SellingStock Controller: " + error.message)
+    return res.status(200).json({ success: true, message: 'Shares sold successfully', userStock });
+  } catch (error) {
+    console.error('Error in sellStocks Controller:', error.message);
     res.status(500).json({ success: false, error: error.message });
   }
 };
 
-
 export const getStocks = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    
-    const stocks = [
-      {
-        "ticker": "AAPL",
-        "name": "Apple Inc.",
-        "date": "2025-01-10",
-        "open": "240.0100",
-        "high": "240.1600",
-        "low": "233.0000",
-        "close": "236.8500",
-        "volume": "61710856"
-      },
-      {
-        "ticker": "MSFT",
-        "name": "Microsoft Corporation",
-        "date": "2025-01-10",
-        "open": "424.6300",
-        "high": "424.7100",
-        "low": "415.0200",
-        "close": "418.9500",
-        "volume": "20201132"
-      },
-      {
-        "ticker": "GOOGL",
-        "name": "Alphabet Inc. (Google)",
-        "date": "2025-01-10",
-        "open": "194.2950",
-        "high": "196.5200",
-        "low": "190.3100",
-        "close": "192.0400",
-        "volume": "26665206"
-      },
-      {
-        "ticker": "AMZN",
-        "name": "Amazon.com, Inc.",
-        "date": "2025-01-10",
-        "open": "221.4600",
-        "high": "221.7100",
-        "low": "216.5000",
-        "close": "218.9400",
-        "volume": "36811525"
-      },
-      {
-        "ticker": "TSLA",
-        "name": "Tesla, Inc.",
-        "date": "2025-01-10",
-        "open": "391.4000",
-        "high": "399.2800",
-        "low": "377.2900",
-        "close": "394.7400",
-        "volume": "62287333"
-      }
-    ];
 
-    // Function to generate a random price between low and high
-    const getRandomPrice = (low, high) => {
-      return (Math.random() * (high - low) + low); // Random price between low and high
-    };
+    const getRandomPrice = (low, high) => (Math.random() * (high - low) + low).toFixed(2);
 
     const transformStocks = (stocks) => {
       return stocks.map((stock, index) => ({
         id: (index + 1).toString(),
         name: stock.name,
-        ticker: stock.ticker,
-        avg_price: parseFloat(getRandomPrice(parseFloat(stock.low), parseFloat(stock.high))).toFixed(2) // Random price
+        ticker: stock.ticker.toUpperCase(),
+        avg_price: getRandomPrice(parseFloat(stock.low), parseFloat(stock.high)),
       }));
     };
 
-    const availableStocks = transformStocks(stocks);
+    const updateOwnedStocks = (ownedStocks, availableStocks) => {
 
-    // Find user's owned stocks from the database
-    const user = await User.findById(userId).populate("stocks");
+      
+      const stockMap = new Map(
+        availableStocks.map((stock) => [stock.ticker, stock])
+      );
+      
+    
+      
 
-    if (!user) {
-      console.log(`User with ID ${userId} not found.`);
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
+      return ownedStocks.map((ownedStock) => {
+        const ownedTicker = ownedStock?.stock?.ticker?.toUpperCase();
+        const currentStock = stockMap.get(ownedTicker);
 
-    user.stocks = user.stocks.map((ownedStock) => {
-      const ownedTicker = ownedStock.ticker.trim().toUpperCase();
-      const currentStock = availableStocks.find(stock => stock.ticker.toUpperCase() === ownedTicker);
+        if (currentStock) {
+          const mktPrice = parseFloat(currentStock.avg_price).toFixed(2);
+          const currentValue = (mktPrice * ownedStock.shares).toFixed(2);
+          const returns = (currentValue - ownedStock.invested).toFixed(2);
+          const returnsPercentage = ((returns / ownedStock.invested) * 100).toFixed(2);
 
-      if (currentStock) {
-        const newMktPrice = parseFloat(currentStock.avg_price).toFixed(2); // Ensure price is properly formatted
-        const newCurrentValue = (parseFloat(newMktPrice) * ownedStock.shares).toFixed(2); // Calculate current value
-        const newReturns = (parseFloat(newCurrentValue) - ownedStock.invested).toFixed(2); // Calculate returns
-        const newReturnsPercentage = ((parseFloat(newReturns) / ownedStock.invested) * 100).toFixed(2); // Calculate return percentage
+          ownedStock.set({
+            mkt_price: mktPrice,
+            current: currentValue,
+            returns,
+            returnsPercentage,
+          });
+        } else {
+          console.log(`Stock ${ownedTicker} not found in available stocks`);
+        }
 
-        ownedStock.set({
-          mkt_price: newMktPrice,
-          current: newCurrentValue,
-          returns: newReturns,
-          returnsPercentage: newReturnsPercentage,
-        });
-      } else {
-        console.log(`Stock ${ownedTicker} not found in available stocks`);
+        return ownedStock;
+      });
+    };
+
+    try {
+      const { userId } = req.params;
+
+      // Mock stock data
+      const stocks = [
+        {
+          ticker: "AAPL",
+          name: "Apple Inc.",
+          date: "2025-01-10",
+          open: "240.0100",
+          high: "240.1600",
+          low: "233.0000",
+          close: "236.8500",
+          volume: "61710856",
+        },
+        {
+          ticker: "MSFT",
+          name: "Microsoft Corporation",
+          date: "2025-01-10",
+          open: "424.6300",
+          high: "424.7100",
+          low: "415.0200",
+          close: "418.9500",
+          volume: "20201132",
+        },
+        {
+          ticker: "GOOGL",
+          name: "Alphabet Inc. (Google)",
+          date: "2025-01-10",
+          open: "194.2950",
+          high: "196.5200",
+          low: "190.3100",
+          close: "192.0400",
+          volume: "26665206",
+        },
+        {
+          ticker: "AMZN",
+          name: "Amazon.com, Inc.",
+          date: "2025-01-10",
+          open: "221.4600",
+          high: "221.7100",
+          low: "216.5000",
+          close: "218.9400",
+          volume: "36811525",
+        },
+        {
+          ticker: "TSLA",
+          name: "Tesla, Inc.",
+          date: "2025-01-10",
+          open: "391.4000",
+          high: "399.2800",
+          low: "377.2900",
+          close: "394.7400",
+          volume: "62287333",
+        },
+      ];
+
+      // Transform the stock data to include average prices
+      const availableStocks = transformStocks(stocks);
+
+      // Fetch the user and their owned stocks
+      const user = await User.findById(userId).populate({
+        path: "stocks", // Populate the `stocks` field in `User`
+        populate: {
+          path: "stock", 
+          model: "Stock",
+        },
+      });
+
+      if (!user) {
+        console.log(`User with ID ${userId} not found.`);
+        return res.status(404).json({ success: false, message: "User not found" });
       }
 
-      return ownedStock;
-    });
+      // Update owned stocks with current market data
+      user.stocks = updateOwnedStocks(user.stocks, availableStocks);
 
-    await user.save();
+      // Save the updated user data
+      await user.save();
 
-    res.status(200).json({
-      success: true,
-      availableStocks,
-      ownedStocks: user.stocks
-    });
+    // console.log("Available Stocks:", availableStocks);
+      //console.log("Updated Owned Stocks:", user.stocks[0]);
 
-  } catch (error) {
-    console.error("Error fetching and updating stocks:", error);
-    return res.status(500).json({ success: false, message: "Failed to fetch and update stocks" });
-  }
+      // Send response
+      return res.status(200).json({
+        success: true,
+        availableStocks,
+        ownedStocks: user.stocks,
+      });
+    } catch (error) {
+      console.error("Error fetching and updating stocks:", error);
+      return res.status(500).json({ success: false, message: "Failed to fetch and update stocks" });
+    }
 };
+
+
 
 
 

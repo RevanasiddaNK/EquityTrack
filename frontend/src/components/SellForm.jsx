@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 
-export default function StockForm({ stock, onSubmit, onClose }) {
+export default function SellForm({ stock, onSubmit, onClose }) {
+    
   const [quantity, setQuantity] = useState(1);
-  const [buyPrice, setBuyPrice] = useState(stock.avg_price);
+  const [sellPrice, setSellPrice] = useState(stock.avg_price);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(quantity, buyPrice);
+    onSubmit(quantity, sellPrice);
   };
 
   return (
-    <div className="fixed inset-0 bg-black  bg-opacity-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white p-6 rounded-lg w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4">Buy {stock.name} ({stock.ticker})</h2>
+        <h2 className="text-xl font-semibold mb-4">Sell {stock.stock.name} ({stock.stock.ticker})</h2>
+        
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -23,19 +25,19 @@ export default function StockForm({ stock, onSubmit, onClose }) {
               min="1"
               value={quantity}
               onChange={(e) => setQuantity(Number(e.target.value))}
-              className="w-full p-2 z-2 border rounded focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-red-500"
             />
           </div>
           {/* <div className="mb-6">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Buy Price ($)
+              Sell Price ($)
             </label>
             <input
               type="number"
               step="0.01"
-              value={buyPrice}
-              onChange={(e) => setBuyPrice(Number(e.target.value))}
-              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+              value={sellPrice}
+              onChange={(e) => setSellPrice(Number(e.target.value))}
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-red-500"
             />
           </div> */}
           <div className="flex justify-end gap-2">
@@ -48,12 +50,13 @@ export default function StockForm({ stock, onSubmit, onClose }) {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
             >
-              Confirm Purchase
+              Confirm Sale
             </button>
           </div>
         </form>
+        
       </div>
     </div>
   );
