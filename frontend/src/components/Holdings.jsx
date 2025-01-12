@@ -13,6 +13,7 @@ export default function Holdings({ portfolio, onBuyMore }) {
   const [isSellingStock, setIsSellingStock] = useState(null);
   const dispatch = useDispatch();
 
+
   const handleSellClickedStock = (stock) => {
     setIsSellingStock(stock);
   };
@@ -37,7 +38,7 @@ export default function Holdings({ portfolio, onBuyMore }) {
       const sellData = {
         quantity,
         stockTicker : isSellingStock.stock.ticker,
-        currentPrice : isSellingStock.avg_price,
+        currentPrice : isSellingStock.mkt_price,
       }
       
       // Sending request to backend

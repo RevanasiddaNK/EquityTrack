@@ -5,7 +5,7 @@ import { USER_API_END_POINT } from '@/utils/constant.js'
 import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
 import { setLoading, setUser, setWalletBalance } from '@/redux/authSlice'
-import { Mail, Lock } from 'react-feather'; 
+import { Mail, Lock, User } from 'react-feather'; 
 
 const Signup = () => {
 
@@ -66,7 +66,7 @@ const Signup = () => {
               Full Name
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
+              <User className="absolute left-3 top-3 text-gray-400" size={20} />
               <input
                 type="text"
                 value={input.fullname}

@@ -9,6 +9,7 @@ import useGetStocks from '../hooks/useGetStocks';
 import { useDispatch, useSelector } from 'react-redux'
 import {  setWalletBalance } from '@/redux/authSlice'
 import { setLoading,setOwnedStocks, setAvailableStocks} from '../redux/stocksSlice'
+import { TrendingUp } from 'lucide-react';
 import axios from 'axios';
 
 function Home() {
@@ -222,6 +223,7 @@ function Home() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
+            <TrendingUp className="h-10 w-10 font-bold text-blue-600 mr-2" />
             <span className="text-xl font-bold text-gray-900">GainGuru</span>
               <div className="ml-8">
                 <button

@@ -96,7 +96,7 @@ export const addStock = async (req, res) => {
 
     // Save the user's updated wallet balance and portfolio
     await user.save();
-
+  
     res.status(201).json({
       success: true,
       message: 'Stock added successfully and wallet balance deducted.',
@@ -112,7 +112,7 @@ export const addStock = async (req, res) => {
 export const sellStocks = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { quantity, stockTicker } = req.body;
+    const { quantity, stockTicker, currentPrice } = req.body;
 
     // Validate numeric input
     const quantityNum = parseFloat(quantity);
@@ -147,7 +147,8 @@ export const sellStocks = async (req, res) => {
     }
 
     // Calculate the sale amount
-    const saleAmount = quantityNum * userStock.mkt_price;
+    const saleAmount = quantityNum * currentPrice;
+    //console.log("parseFloat((user.walletBalance + saleAmount).toFixed(2))",parseFloat((user.walletBalance + saleAmount).toFixed(2)) );
 
     // Calculate the remaining shares and update details
     const remainingShares = userStock.shares - quantityNum;
@@ -182,7 +183,6 @@ export const sellStocks = async (req, res) => {
     userStock.returnsPercentage = parseFloat(returnsPercentage.toFixed(2));
 
     await userStock.save();
-
     // Add sale amount to user's wallet
     user.walletBalance = parseFloat((user.walletBalance + saleAmount).toFixed(2));
     await user.save();
@@ -192,6 +192,7 @@ export const sellStocks = async (req, res) => {
       message: 'Shares sold successfully',
       walletBalance: user.walletBalance,
     });
+
   } catch (error) {
     console.error('Error in sellStocks Controller:', error.message);
     res.status(500).json({ success: false, error: error.message });
@@ -200,145 +201,146 @@ export const sellStocks = async (req, res) => {
 
 export const getStocks = async (req, res) => {
 
-    const getRandomPrice = (low, high) => (Math.random() * (high - low) + low).toFixed(2);
+  const getRandomPrice = (low, high) => (Math.random() * (high - low) + low).toFixed(2);
 
-    const transformStocks = (stocks) => {
-      return stocks.map((stock, index) => ({
-        id: (index + 1).toString(),
-        name: stock.name,
-        ticker: stock.ticker.toUpperCase(),
-        avg_price: getRandomPrice(parseFloat(stock.low), parseFloat(stock.high)),
-      }));
-    };
+  const transformStocks = (stocks) => {
+    return stocks.map((stock, index) => ({
+      id: (index + 1).toString(),
+      name: stock.name,
+      ticker: stock.ticker.toUpperCase(),
+      avg_price: getRandomPrice(parseFloat(stock.low), parseFloat(stock.high)),
+    }));
+  };
 
-    const updateOwnedStocks = (ownedStocks, availableStocks) => {
+  const updateOwnedStocks = (ownedStocks, availableStocks) => {
 
-      
-      const stockMap = new Map(
-        availableStocks.map((stock) => [stock.ticker, stock])
-      );
-      
     
-      
+    const stockMap = new Map(
+      availableStocks.map((stock) => [stock.ticker, stock])
+    );
+    
+  
+    
 
-      return ownedStocks.map((ownedStock) => {
-        const ownedTicker = ownedStock?.stock?.ticker?.toUpperCase();
-        const currentStock = stockMap.get(ownedTicker);
+    return ownedStocks.map((ownedStock) => {
+      const ownedTicker = ownedStock?.stock?.ticker?.toUpperCase();
+      const currentStock = stockMap.get(ownedTicker);
 
-        if (currentStock) {
-          const mktPrice = parseFloat(currentStock.avg_price).toFixed(2);
-          const currentValue = (mktPrice * ownedStock.shares).toFixed(2);
-          const returns = (currentValue - ownedStock.invested).toFixed(2);
-          const returnsPercentage = ((returns / ownedStock.invested) * 100).toFixed(2);
+      if (currentStock) {
+        const mktPrice = parseFloat(currentStock.avg_price).toFixed(2);
+        const currentValue = (mktPrice * ownedStock.shares).toFixed(2);
+        const returns = (currentValue - ownedStock.invested).toFixed(2);
+        const returnsPercentage = ((returns / ownedStock.invested) * 100).toFixed(2);
 
-          ownedStock.set({
-            mkt_price: mktPrice,
-            current: currentValue,
-            returns,
-            returnsPercentage,
-          });
-        } else {
-          console.log(`Stock ${ownedTicker} not found in available stocks`);
-        }
-
-        return ownedStock;
-      });
-    };
-
-    try {
-      const { userId } = req.params;
-
-      // Mock stock data
-      const stocks = [
-        {
-          ticker: "AAPL",
-          name: "Apple Inc.",
-          date: "2025-01-10",
-          open: "240.0100",
-          high: "240.1600",
-          low: "233.0000",
-          close: "236.8500",
-          volume: "61710856",
-        },
-        {
-          ticker: "MSFT",
-          name: "Microsoft Corporation",
-          date: "2025-01-10",
-          open: "424.6300",
-          high: "424.7100",
-          low: "415.0200",
-          close: "418.9500",
-          volume: "20201132",
-        },
-        {
-          ticker: "GOOGL",
-          name: "Alphabet Inc. (Google)",
-          date: "2025-01-10",
-          open: "194.2950",
-          high: "196.5200",
-          low: "190.3100",
-          close: "192.0400",
-          volume: "26665206",
-        },
-        {
-          ticker: "AMZN",
-          name: "Amazon.com, Inc.",
-          date: "2025-01-10",
-          open: "221.4600",
-          high: "221.7100",
-          low: "216.5000",
-          close: "218.9400",
-          volume: "36811525",
-        },
-        {
-          ticker: "TSLA",
-          name: "Tesla, Inc.",
-          date: "2025-01-10",
-          open: "391.4000",
-          high: "399.2800",
-          low: "377.2900",
-          close: "394.7400",
-          volume: "62287333",
-        },
-      ];
-
-      // Transform the stock data to include average prices
-      const availableStocks = transformStocks(stocks);
-
-      // Fetch the user and their owned stocks
-      const user = await User.findById(userId).populate({
-        path: "stocks", // Populate the `stocks` field in `User`
-        populate: {
-          path: "stock", 
-          model: "Stock",
-        },
-      });
-
-      if (!user) {
-        console.log(`User with ID ${userId} not found.`);
-        return res.status(404).json({ success: false, message: "User not found" });
+        ownedStock.set({
+          mkt_price: mktPrice,
+          current: currentValue,
+          returns,
+          returnsPercentage,
+        });
+      } else {
+        console.log(`Stock ${ownedTicker} not found in available stocks`);
       }
 
-      // Update owned stocks with current market data
-      user.stocks = updateOwnedStocks(user.stocks, availableStocks);
+      return ownedStock;
+    });
+  };
 
-      // Save the updated user data
-      await user.save();
+  try {
+    const { userId } = req.params;
 
-    // console.log("Available Stocks:", availableStocks);
-      //console.log("Updated Owned Stocks:", user.stocks[0]);
+    // Mock stock data
+    const stocks = [
+      {
+        ticker: "AAPL",
+        name: "Apple Inc.",
+        date: "2025-01-10",
+        open: "240.0100",
+        high: "240.1600",
+        low: "233.0000",
+        close: "236.8500",
+        volume: "61710856",
+      },
+      {
+        ticker: "MSFT",
+        name: "Microsoft Corporation",
+        date: "2025-01-10",
+        open: "424.6300",
+        high: "424.7100",
+        low: "415.0200",
+        close: "418.9500",
+        volume: "20201132",
+      },
+      {
+        ticker: "GOOGL",
+        name: "Alphabet Inc. (Google)",
+        date: "2025-01-10",
+        open: "194.2950",
+        high: "196.5200",
+        low: "190.3100",
+        close: "192.0400",
+        volume: "26665206",
+      },
+      {
+        ticker: "AMZN",
+        name: "Amazon.com, Inc.",
+        date: "2025-01-10",
+        open: "221.4600",
+        high: "221.7100",
+        low: "216.5000",
+        close: "218.9400",
+        volume: "36811525",
+      },
+      {
+        ticker: "TSLA",
+        name: "Tesla, Inc.",
+        date: "2025-01-10",
+        open: "391.4000",
+        high: "399.2800",
+        low: "377.2900",
+        close: "394.7400",
+        volume: "62287333",
+      },
+    ];
 
-      // Send response
-      return res.status(200).json({
-        success: true,
-        availableStocks,
-        ownedStocks: user.stocks,
-      });
-    } catch (error) {
-      console.error("Error fetching and updating stocks:", error);
-      return res.status(500).json({ success: false, message: "Failed to fetch and update stocks" });
+    // Transform the stock data to include average prices
+    const availableStocks = transformStocks(stocks);
+
+    // Fetch the user and their owned stocks
+    const user = await User.findById(userId).populate({
+      path: "stocks", // Populate the `stocks` field in `User`
+      populate: {
+        path: "stock", 
+        model: "Stock",
+      },
+    });
+
+    if (!user) {
+      console.log(`User with ID ${userId} not found.`);
+      return res.status(404).json({ success: false, message: "User not found" });
     }
+
+    // Update owned stocks with current market data
+    user.stocks = updateOwnedStocks(user.stocks, availableStocks);
+
+    // Save the updated user data
+    await user.save();
+
+
+    const ownedStocks = user.stocks.sort((a, b) => b.returnsPercentage - a.returnsPercentage);
+
+
+    return res.status(200).json({
+      success: true,
+      availableStocks,
+      ownedStocks
+    });
+  } catch (error) {
+    console.error("Error fetching and updating stocks:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch and update stocks" });
+  }
 };
+
 
 
 
