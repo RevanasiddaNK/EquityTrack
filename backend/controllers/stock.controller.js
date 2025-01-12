@@ -1,6 +1,12 @@
+import fetch from 'node-fetch';
+
 import  {Stock}  from '../models/stock.model.js';
 import  {UserStock}  from '../models/userStock.model.js';
 import  {User}  from '../models/user.model.js';
+import {DailyStock} from '../models/dailyStock.model.js';
+
+const API_KEY = process.env.ALPHA_VANTAGE_API_KEY;
+
 
 export const addStock = async (req, res) => {
   try {
@@ -199,6 +205,80 @@ export const sellStocks = async (req, res) => {
   }
 };
 
+
+
+export const fetchStockData = async (req, res) => {
+  // Updated stock details to only include AAPL and MSFT
+  const stockDetails = [
+    { ticker: 'AAPL', name: 'Apple Inc.' },
+    { ticker: 'MSFT', name: 'Microsoft Corporation' }
+  ];
+
+  try {
+    const responses = await Promise.all(stockDetails.map(async (stock) => {
+      try {
+        const response = await fetch(
+          `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stock.ticker}&apikey=${process.env.API_KEY}`
+        );
+
+        if (!response.ok) {
+          throw new Error(`Error fetching data for ${stock.ticker}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const timeSeries = data['Time Series (Daily)'];
+
+        if (!timeSeries) {
+          console.error(`No data for ${stock.ticker}`);
+          return { ticker: stock.ticker, name: stock.name, error: "No data available" };
+        }
+
+        const dates = Object.keys(timeSeries);
+        const previousDay = dates[0]; // Latest trading day
+        const details = timeSeries[previousDay];
+
+        // Upsert (insert or update) stock data in the database
+        await DailyStock.findOneAndUpdate(
+          { ticker: stock.ticker, date: previousDay },
+          {
+            ticker: stock.ticker,
+            name: stock.name,
+            date: previousDay,
+            open: details['1. open'],
+            high: details['2. high'],
+            low: details['3. low'],
+            close: details['4. close'],
+            volume: details['5. volume'],
+            lastUpdated: new Date()
+          },
+          { upsert: true, new: true }
+        );
+
+        return {
+          ticker: stock.ticker,
+          name: stock.name,
+          date: previousDay,
+          open: details['1. open'],
+          high: details['2. high'],
+          low: details['3. low'],
+          close: details['4. close'],
+          volume: details['5. volume']
+        };
+
+      } catch (err) {
+        console.error(`Error processing ${stock.ticker}:`, err);
+        return { ticker: stock.ticker, name: stock.name, error: err.message };
+      }
+    }));
+
+    res.json({ success: true, data: responses });
+  } catch (error) {
+    console.error("Error fetching stock data:", error);
+    res.status(500).json({ success: false, error: "Failed to fetch stock data" });
+  }
+};
+
+
 export const getStocks = async (req, res) => {
 
   const getRandomPrice = (low, high) => (Math.random() * (high - low) + low).toFixed(2);
@@ -248,7 +328,7 @@ export const getStocks = async (req, res) => {
 
   try {
     const { userId } = req.params;
-
+     // const stocks = await fetchStockData();
     // Mock stock data
     const stocks = [
       {
@@ -303,6 +383,8 @@ export const getStocks = async (req, res) => {
       },
     ];
 
+
+
     // Transform the stock data to include average prices
     const availableStocks = transformStocks(stocks);
 
@@ -340,6 +422,12 @@ export const getStocks = async (req, res) => {
     return res.status(500).json({ success: false, message: "Failed to fetch and update stocks" });
   }
 };
+
+
+
+
+
+
 
 
 

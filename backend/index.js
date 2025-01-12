@@ -1,16 +1,16 @@
 import express from "express";
+const app = express();
+
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./utils/db.js";
-dotenv.config({});
 import userRoute from "./routes/user.route.js";
 import stockRoute from "./routes/stock.route.js";
-import stockPriceRoute from "./routes/stockprice.route.js";
 import fetch from "node-fetch";
+import './cronJobs/stockCron.js';
 
-
-const app = express();
+dotenv.config({});
 
 const API_KEY = process.env.ALPHA_VANTAGE_API_KEY;
 
@@ -32,7 +32,7 @@ app.use(cors(corsOptions));
 
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/stocks", stockRoute);
-app.use("/api/v1/stock-price", stockPriceRoute);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT,()=>{
@@ -45,10 +45,10 @@ app.get("/getStocks", async (req, res) => {
     // Array of stock symbols with their corresponding names
     const stockDetails = [
         { ticker: 'AAPL', name: 'Apple Inc.' },
-        { ticker: 'MSFT', name: 'Microsoft Corporation' },
-        { ticker: 'GOOGL', name: 'Alphabet Inc. (Google)' },
-        { ticker: 'AMZN', name: 'Amazon.com, Inc.' },
-        { ticker: 'TSLA', name: 'Tesla, Inc.' }
+        // { ticker: 'MSFT', name: 'Microsoft Corporation' },
+        // { ticker: 'GOOGL', name: 'Alphabet Inc. (Google)' },
+        // { ticker: 'AMZN', name: 'Amazon.com, Inc.' },
+        // { ticker: 'TSLA', name: 'Tesla, Inc.' }
     ];
 
     try {
@@ -76,7 +76,7 @@ app.get("/getStocks", async (req, res) => {
 
             // Return the desired fields
             return {
-                ticker: stock.ticker,  // Corrected to match the field name
+                ticker: stock.ticker,
                 name: stock.name,
                 date: previousDay,
                 open: details['1. open'],
