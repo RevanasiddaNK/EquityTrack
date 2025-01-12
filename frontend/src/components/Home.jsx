@@ -227,7 +227,7 @@ function Home() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <TrendingUp className="h-10 w-10 text-blue-600 mr-2" />
-            <span className="text-3xl font-bold text-gray-900">GainGuru</span>
+            <span className="text-3xl font-bold text-gray-900">EquityTrack</span>
             <div className="ml-10 hidden md:flex space-x-6">
               <button
                 onClick={() => setView('home')} 

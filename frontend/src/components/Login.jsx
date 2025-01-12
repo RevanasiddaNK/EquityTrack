@@ -61,7 +61,7 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
     <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <div className="flex items-center justify-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900">Login to GainGuru</h2>
+        <h2 className="text-3xl font-bold text-gray-900">Login to EquityTrack</h2>
         </div>
         <form onSubmit={submitHandler}>
         <div className="mb-6">
