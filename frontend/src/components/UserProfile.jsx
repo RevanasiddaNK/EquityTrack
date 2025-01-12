@@ -67,39 +67,40 @@ export default function UserProfile({ onAddFunds, onWithdraw, userEmail }) {
   };
 
   return (
+
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
+          className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 focus:outline-none"
         >
           <div className="flex items-center">
-            <Wallet className="h-5 w-5 mr-2" />
-            <span className="font-medium">${walletBalance?.toFixed(2) || -1000}</span>
+            <Wallet className="h-5 w-5 mr-2 " />
+            <span className="text-lg font-semibold">${walletBalance?.toFixed(2) || -1000}</span>
           </div>
           <ChevronDown className="h-4 w-4" />
         </button>
 
         {isOpen && (
           <div className="absolute right-0 mt-2 w-48 z-20 bg-white rounded-md shadow-lg py-1">
-            <div className="px-4 py-2 text-sm text-gray-700 border-b">
+            <div className="px-4 py-2 text-sm font-bold text-gray-700 border-b">
               {userEmail}
             </div>
             <button
               onClick={() => openModal('add')}
-              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-200"
             >
               Add Funds
             </button>
             <button
               onClick={() => openModal('withdraw')}
-              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-200"
             >
               Withdraw Funds
             </button>
             <hr className="my-1" />
             <button
               onClick={logoutHandler}
-              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-200"
             >
               <div className="flex items-center">
                 <LogOut className="h-4 w-4 mr-2" />
@@ -111,43 +112,47 @@ export default function UserProfile({ onAddFunds, onWithdraw, userEmail }) {
 
         {showFundsModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg w-full max-w-md">
-              <h2 className="text-xl font-semibold mb-4">
+            <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">
                 {transactionType === 'add' ? 'Add Funds' : 'Withdraw Funds'}
               </h2>
-              <form onSubmit={handleTransaction}>
-                <div className="mb-4 ">
-                  <label className="block text-gray-700 text-sm font-bold mb-2">
-                    Amount ($)
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div className="flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowFundsModal(false)}
-                    className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                  >
-                    Confirm
-                  </button>
-                </div>
+
+              <form onSubmit={handleTransaction} className="p-6 bg-white rounded-lg shadow-md max-w-md mx-auto transition-transform duration-200 hover:scale-105 hover:shadow-lg">
+                  <div className="mb-6">
+                    <label className="block text-gray-700 text-sm font-semibold mb-2">
+                      Amount ($)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-200 hover:border-blue-400"
+                      placeholder="Enter amount"
+                    />
+                  </div>
+                  <div className="flex justify-end gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowFundsModal(false)}
+                      className="px-4 py-2 text-gray-600 hover:text-gray-800 transition duration-200 border border-gray-300 rounded-md hover:bg-gray-100"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200 shadow-md hover:shadow-lg"
+                    >
+                      Confirm
+                    </button>
+                  </div>
               </form>
+              
             </div>
           </div>
         )}
+        
       </div>
   );
 

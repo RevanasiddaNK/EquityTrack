@@ -218,61 +218,89 @@ function Home() {
  
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-            <TrendingUp className="h-10 w-10 font-bold text-blue-600 mr-2" />
-            <span className="text-xl font-bold text-gray-900">GainGuru</span>
-              <div className="ml-8">
-                <button
-                  onClick={() => setView('home')}
-                  className={`inline-flex items-center px-4 py-2 border-b-2 ${
-                    view === 'home' ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500'
-                  }`}
-                >
-                  Home
-                </button>
-                <button
-                  onClick={() => setView('Holdings')}
-                  className={`inline-flex items-center px-4 py-2 border-b-2 ${
-                    view === 'Holdings' ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500'
-                  }`}
-                >
-                  Holdings
-                </button>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <UserProfile
-                walletBalance={walletBalance}
-                onAddFunds={handleAddFunds}
-                onWithdraw={handleWithdraw}
-                userEmail={user?.email}
-              />
+
+
+  <div className="min-h-screen bg-gray-100">
+
+    <nav className="bg-white shadow-lg">
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center">
+            <TrendingUp className="h-10 w-10 text-blue-600 mr-2" />
+            <span className="text-3xl font-bold text-gray-900">GainGuru</span>
+            <div className="ml-10 hidden md:flex space-x-6">
+              <button
+                onClick={() => setView('home')} 
+                className={`inline-flex items-center px-4 py-2 text-lg  font-semibold rounded-md transition duration-200 ${
+                  view === 'home' ? 'border-b-2 border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Home
+              </button>
+              <button
+                onClick={() => setView('Holdings')}
+                className={`inline-flex items-center px-4 py-2 text-lg font-semibold rounded-md transition duration-200 ${
+                  view === 'Holdings' ? 'border-b-2 border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Holdings
+              </button>
             </div>
           </div>
+          <div className="flex items-center">
+            <UserProfile
+              walletBalance={walletBalance}
+              onAddFunds={handleAddFunds}
+              onWithdraw={handleWithdraw}
+              userEmail={user?.email}
+            />
+          </div>
         </div>
-      </nav>
+      </div>
+    </nav>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {view === 'home' ? (
-          <StockList
-            stocks={filterStocks()}
-            onBuy={handleBuy}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-          />
-        ) : (
-          <Holdings portfolio={portfolio}  onBuyMore={handleBuyMore} />
-        )}
+    <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      {view === 'home' ? (
+        <StockList
+          stocks={filterStocks()}
+          onBuy={handleBuy}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
+      ) : (
+        <Holdings portfolio={portfolio} onBuyMore={handleBuyMore} />
+      )}
 
-        {selectedStock && (
-          <StockForm stock={selectedStock} onSubmit={handleBuySubmit} onClose={() => setSelectedStock(null)} />
-        )}
-      </main>
+      {selectedStock && (
+        <StockForm stock={selectedStock} onSubmit={handleBuySubmit} onClose={() => setSelectedStock(null)} />
+      )}
+    </main>
+
+    {/* Responsive Navigation for Mobile */}
+    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white shadow-lg">
+      <div className="flex justify-around py-2">
+        <button
+          onClick={() => setView('home')}
+          className={`flex flex-col items-center text-sm ${
+            view === 'home' ? 'text-blue-500' : 'text-gray-500'
+          }`}
+        >
+          <span>Home</span>
+        </button>
+        <button
+          onClick={() => setView('Holdings')}
+          className={`flex flex-col items-center text-sm ${
+            view === 'Holdings' ? 'text-blue-500' : 'text-gray-500'
+          }`}
+        >
+          <span>Holdings</span>
+        </button>
+      </div>
     </div>
+
+  </div>
+
+
   );
 
 }

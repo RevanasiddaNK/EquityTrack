@@ -211,7 +211,10 @@ export const fetchStockData = async (req, res) => {
   // Updated stock details to only include AAPL and MSFT
   const stockDetails = [
     { ticker: 'AAPL', name: 'Apple Inc.' },
-    { ticker: 'MSFT', name: 'Microsoft Corporation' }
+    { ticker: 'MSFT', name: 'Microsoft Corporation' },
+    { ticker: 'GOOGL', name: 'Alphabet Inc. (Google)' },
+    { ticker: 'AMZN', name: 'Amazon.com, Inc.' },
+    { ticker: 'TSLA', name: 'Tesla, Inc.' }
   ];
 
   try {
