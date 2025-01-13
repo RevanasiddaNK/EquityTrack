@@ -46,7 +46,7 @@ app.listen(PORT,()=>{
     console.log(`server running at port ${PORT}`);
 })
 
-if(1) {
+if(process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, 'frontend/dist')));
 
     app.get("*",(req,res) =>{
