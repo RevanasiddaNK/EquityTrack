@@ -9,8 +9,14 @@ import userRoute from "./routes/user.route.js";
 import stockRoute from "./routes/stock.route.js";
 import fetch from "node-fetch";
 import './cronJobs/stockCron.js';
+import path from "path";
+const __dirname = path.resolve()
 
 dotenv.config({});
+
+import 'dotenv/config';
+
+
 
 const API_KEY = process.env.ALPHA_VANTAGE_API_KEY;
 
@@ -39,6 +45,14 @@ app.listen(PORT,()=>{
     connectDB();
     console.log(`server running at port ${PORT}`);
 })
+
+if(1) {
+    app.use(express.static(path.join(__dirname, 'frontend/dist')));
+
+    app.get("*",(req,res) =>{
+        res.sendFile(__dirname, 'frontend', "dist", 'index.html');
+    });
+}
 
 
 app.get("/getStocks", async (req, res) => {
@@ -94,4 +108,5 @@ app.get("/getStocks", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch stock data" });
     }
 });
+
 
