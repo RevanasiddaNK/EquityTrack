@@ -12,6 +12,10 @@ import { setLoading,setOwnedStocks, setAvailableStocks} from '../redux/stocksSli
 import { TrendingUp } from 'lucide-react';
 import axios from 'axios';
 
+import { USER_API_END_POINT } from '@/utils/constant.js'
+import { STOCK_API_END_POINT } from '@/utils/constant.js'
+
+
 function Home() {
   
   const navigate = useNavigate();
@@ -104,7 +108,7 @@ function Home() {
 
       // Sending request to backend
       const res = await axios.post(
-        `http://localhost:5000/api/v1/stocks/add/${user._id}`, // Ensure `user` contains a valid ID
+        `${STOCK_API_END_POINT}/add/${user._id}`,
         inputStock,
         {
           headers: { "Content-Type": "application/json" },
@@ -143,7 +147,7 @@ function Home() {
 
           // Sending request to backend
           const res = await axios.post(
-            'http://localhost:5000/api/v1/user/add',
+            `${USER_API_END_POINT}/add`,
             {
               userId : user._id, amountToAdd : amount
             },
@@ -185,7 +189,7 @@ function Home() {
 
           // Sending request to backend
           const res = await axios.post(
-            'http://localhost:5000/api/v1/user/withdraw',
+            `${USER_API_END_POINT}/withdraw`,
             {
               userId : user._id, amountToWithdraw : amount
             },

@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
 import { setLoading, setUser,setWalletBalance } from '@/redux/authSlice'
 import { Mail, Lock } from 'react-feather'; // Add this import for the icons
+import { USER_API_END_POINT } from '@/utils/constant'
 
 const Login = () => {
     const [input, setInput] = useState({
@@ -24,7 +25,7 @@ const Login = () => {
         e.preventDefault();
         try {
             dispatch(setLoading(true));
-            const res = await axios.post('http://localhost:5000/api/v1/user/login', input, {
+            const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
                 headers: {
                     "Content-Type": "application/json"
                 },

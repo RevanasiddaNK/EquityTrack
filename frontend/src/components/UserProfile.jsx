@@ -7,6 +7,7 @@ import { setOwnedStocks, setAvailableStocks} from '../redux/stocksSlice'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
+import { USER_API_END_POINT } from '@/utils/constant'
 
 export default function UserProfile({ onAddFunds, onWithdraw, userEmail }) {
   
@@ -24,7 +25,7 @@ export default function UserProfile({ onAddFunds, onWithdraw, userEmail }) {
     e.preventDefault();
     try {
         dispatch(setLoading(true));
-        const res = await axios.post('http://localhost:5000/api/v1/user/logout',{
+        const res = await axios.post(`${USER_API_END_POINT}/logout`,{
             headers: {
                 "Content-Type": "application/json"
             },
