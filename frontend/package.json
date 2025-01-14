@@ -2,14 +2,14 @@
   "name": "vite-react-typescript-starter",
   "private": true,
   "version": "0.0.0",
-      "type": "module",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "npm install --include=dev && vite build",
     "preview": "vite preview"
   },
   "engines": {
-  "node": "18.x"
+    "node": "18.x"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.0",
@@ -25,7 +25,8 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.1",
     "redux-persist": "^6.0.0",
-    "sonner": "^1.7.1"
+    "sonner": "^1.7.1",
+    "vite-react-typescript-starter": "file:"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
