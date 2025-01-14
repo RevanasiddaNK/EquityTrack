@@ -3,13 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
-      "scripts": {
-      "dev": "nodemon backend/index.js", 
-      "start": "cross-env NODE_ENV=production node backend/index.js",
-      "build": "cd frontend && npm install && npm run build",
-      "postinstall": "cd backend && npm install"
-    },
-
+  "scripts": {
+    "dev": " node backend/index.js",
+    "start": "node backend/index.js",
+    "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
+  },
   "author": "",
   "license": "ISC",
   "description": "",
