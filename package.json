@@ -5,8 +5,9 @@
   "type": "module",
       "scripts": {
       "dev": "nodemon backend/index.js", 
-      "start": "NODE_ENV=production node backend/index.js",
-      "build": "cd frontend && npm install && npm run build"
+      "start": "cross-env NODE_ENV=production node backend/index.js",
+      "build": "cd frontend && npm install && npm run build",
+      "postinstall": "cd backend && npm install"
     },
 
   "author": "",
