@@ -27,15 +27,6 @@ app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 
 
-const corsOptions = {
-    origin: 'https://equity-track.vercel.app', // Allow only your frontend
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed HTTP methods
-    credentials: true, // If you need to send cookies or authorization headers
-};
-
-// Apply the CORS middleware with your options
-app.use(cors(corsOptions));
-
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/stocks", stockRoute);
 
