@@ -36,9 +36,7 @@ const Signup = () => {
             });
 
             if (res.data.success) {
-              dispatch(setUser(res.data.user));
-              dispatch(setWalletBalance(res.data.user.walletBalance));
-              navigate("/home");
+                navigate("/");
                 toast.success(res.data.message);
             }
         } catch (error) {
