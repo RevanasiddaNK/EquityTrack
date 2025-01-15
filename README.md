@@ -8,12 +8,12 @@
 
 ## Key Features
 
-- 🎤 **User  Authentication** : Secure login system with JWT-based authentication for personalized portfolio access.
-- 💼 **Portfolio Management** :  Users can create a party or join an existing one with friends.
+- 🎤 **User  Authentication** :  Secure login system with JWT-based authentication for personalized portfolio access.
+- 💼 **Portfolio Management** :  Users can add/remove stocks, specify the quantity owned, and record purchase prices.
 - 🕹️ **Real-Time Stock Price Updates** :  Fetch and display real-time stock prices using an API.
-- 🧮 **Portfolio Value Calculation** : Members vote on which song should play next.
+- 🧮 **Portfolio Value Calculation** : Automatically calculate the total value of the portfolio, including gains and losses.
 - 📈 **Performance Tracking** : View performance over time, including total profit/loss and percentage changes.
-- 🚀 **Live Updates**: The app uses real-time communication to update votes and song transitions.
+- 📅 **Transaction History**: (Coming Soon) Keep track of stock purchases, sales, and portfolio adjustments, displaying a timeline of transactions and their impact on the portfolio.
 
 ## Technologies Used
 
