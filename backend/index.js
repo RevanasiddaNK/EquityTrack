@@ -30,11 +30,20 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/stocks", stockRoute);
 
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT,()=>{
-    connectDB();
-    console.log(`server running at port ${PORT}`);
-})
+const PORT = process.env.PORT || 10000;
+
+const server = http.createServer(app);
+
+// Configure server timeouts
+server.keepAliveTimeout = 120000; // 2 minutes
+server.headersTimeout = 120000;  // 2 minutes
+
+// Start the server
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+
 
 if(process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
