@@ -30,11 +30,11 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/stocks", stockRoute);
 
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
-
-
+const PORT = process.env.PORT || 3000;
+app.listen(PORT,()=>{
+    connectDB();
+    console.log(`server running at port ${PORT}`);
+})
 
 if(process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
@@ -43,5 +43,6 @@ if(process.env.NODE_ENV === 'production') {
         res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
     });
 }
+
 
 
