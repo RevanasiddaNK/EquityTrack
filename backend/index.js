@@ -36,7 +36,7 @@ app.listen(PORT,()=>{
     connectDB();
     console.log(`server running at port ${PORT}`);
 })
-
+/*
 if(process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, 'frontend/dist')));
 
@@ -44,17 +44,29 @@ if(process.env.NODE_ENV === 'production') {
         res.sendFile(__dirname, 'frontend', "dist", 'index.html');
     });
 }
+    */
 
 
 app.get("/getStocks", async (req, res) => {
     // Array of stock symbols with their corresponding names
     const stockDetails = [
         { ticker: 'AAPL', name: 'Apple Inc.' },
-        // { ticker: 'MSFT', name: 'Microsoft Corporation' },
-        // { ticker: 'GOOGL', name: 'Alphabet Inc. (Google)' },
-        // { ticker: 'AMZN', name: 'Amazon.com, Inc.' },
-        // { ticker: 'TSLA', name: 'Tesla, Inc.' }
+        { ticker: 'MSFT', name: 'Microsoft Corporation' },
+        { ticker: 'GOOGL', name: 'Alphabet Inc. (Google)' },
+        { ticker: 'AMZN', name: 'Amazon.com, Inc.' },
+        { ticker: 'TSLA', name: 'Tesla, Inc.' },
+        { ticker: 'NFLX', name: 'Netflix, Inc.' },
+        { ticker: 'META', name: 'Meta Platforms, Inc.' },
+        { ticker: 'NVDA', name: 'NVIDIA Corporation' },
+        { ticker: 'BRK-B', name: 'Berkshire Hathaway Inc.' },
+        { ticker: 'JPM', name: 'JPMorgan Chase & Co.' },
+        { ticker: 'V', name: 'Visa Inc.' },
+        { ticker: 'DIS', name: 'The Walt Disney Company' },
+        { ticker: 'PEP', name: 'PepsiCo, Inc.' },
+        { ticker: 'KO', name: 'The Coca-Cola Company' },
+        { ticker: 'XOM', name: 'Exxon Mobil Corporation' }
     ];
+    
 
     try {
         const responses = await Promise.all(stockDetails.map(async (stock) => {

@@ -1,6 +1,7 @@
 import express from "express";
 import isAuthenticated from "../middlewares/isAuthenticated.js";  // Ensure the path is correct
-import { addStock, sellStocks, getStocks, fetchStockData } from "../controllers/stock.controller.js";  // Ensure the path is correct
+import { addStock, sellStocks, getStocks} from "../controllers/stock.controller.js";  // Ensure the path is correct
+import {fetchStockData} from "../utils/data.js"
 
 const router = express.Router();
 
