@@ -38,33 +38,28 @@
 
 1. clone the repository:
    ```bash
-    git clone https://github.com/RevanasiddaNK/VoteTune.git
+    https://github.com/RevanasiddaNK/EquityTrack.git
    ```
    
 2. Navigate to the project directory:
    ```bash
-    cd VoteTune
+    cd EquityTrack
    ```
    
 3. Set up environment variables :
    ```bash
-    GOOGLE_CLIENT_ID = xxxxx
-    GOOGLE_CLIENT_SECRET = xxxxx
-    NEXTAUTH_SECRET = "xxxxx"
-    DATABASE_URL="mysql://root:xxxxx@localhost:3306/votetune"
+   NODE_ENV = production
+   PORT = 5000
+   SECRET_KEY = "xxxxx"
+   ALPHA_VANTAGE_API_KEY = xxxyyyyzzzz
+   MONGO_URI = mongodb+srv://<username>:<password>@cluster0.x5e13.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
    ```
   
 4.  Install dependencies:
    ```bash
-       npm install
+       npm run build
    ```
 
-5. Run database migrations:
+5. Start the development server:
    ```bash
-     npx prisma migrate dev
-     npx prisma generate
-
-   ```
-6. Start the development server:
-   ```bash
-     npm run dev
+     npm run start
