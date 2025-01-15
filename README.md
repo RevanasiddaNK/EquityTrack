@@ -38,7 +38,7 @@
 
 1. clone the repository :
    ```bash
-    https://github.com/RevanasiddaNK/EquityTrack.git
+    git clone https://github.com/RevanasiddaNK/EquityTrack.git
    ```
    
 2. Navigate to the project directory :
