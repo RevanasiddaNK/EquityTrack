@@ -31,22 +31,6 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/stocks", stockRoute);
 
 
-const PORT = process.env.PORT || 10000;
-
-const runOnceOnServerStart = async () => {
-    console.log("Fetching stock data as backend starts...");
-    try {
-        await fetchStockData();  // Fetch the stock data immediately on server startup
-    } catch (error) {
-        console.error("Error fetching stock data on server start:", error);
-    }
-};
-
-// Trigger the stock data fetching function once when the server starts
-runOnceOnServerStart();
-
-
-
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
