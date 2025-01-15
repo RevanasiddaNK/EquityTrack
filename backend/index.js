@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./utils/db.js";
+import { fetchStockData } from './utils/data.js';
 import userRoute from "./routes/user.route.js";
 import stockRoute from "./routes/stock.route.js";
 import './cronJobs/stockCron.js';
@@ -31,6 +32,19 @@ app.use("/api/v1/stocks", stockRoute);
 
 
 const PORT = process.env.PORT || 10000;
+
+const runOnceOnServerStart = async () => {
+    console.log("Fetching stock data as backend starts...");
+    try {
+        await fetchStockData();  // Fetch the stock data immediately on server startup
+    } catch (error) {
+        console.error("Error fetching stock data on server start:", error);
+    }
+};
+
+// Trigger the stock data fetching function once when the server starts
+runOnceOnServerStart();
+
 
 
 app.listen(PORT, '0.0.0.0', () => {
