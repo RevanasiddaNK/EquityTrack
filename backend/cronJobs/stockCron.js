@@ -1,7 +1,6 @@
 import cron from 'node-cron';
-import { fetchStockData } from '../controllers/stock.controller.js';
 import fetch from 'node-fetch';
-
+import  {fetchStockData}  from '../utils/data.js';
 
 
 // 1. Pre-market opens (8:00 AM ET) -> 6:30 PM IST
@@ -48,3 +47,10 @@ cron.schedule('30 10 * * *', async () => {
     scheduled: true,
     timezone: "Asia/Kolkata"
 });
+
+
+
+
+
+
+
