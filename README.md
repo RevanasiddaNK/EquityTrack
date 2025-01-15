@@ -8,7 +8,7 @@
 
 ## Key Features
 
-- 🎤 **User  Authentication : ** Secure login system with JWT-based authentication for personalized portfolio access.
+- 🎤 **User  Authentication** : Secure login system with JWT-based authentication for personalized portfolio access.
 - 💼 **Portfolio Management** :  Users can create a party or join an existing one with friends.
 - 🕹️ **Real-Time Stock Price Updates** :  Fetch and display real-time stock prices using an API.
 - 🧮 **Portfolio Value Calculation** : Members vote on which song should play next.
