@@ -63,3 +63,10 @@
 5. Start Command :
    ```bash
      npm run start
+
+## Live Demo
+
+You can check out the live version of the Stock Portfolio Application here:
+
+[Stock Portfolio App Live Demo](https://equitytrack.onrender.com)
+
