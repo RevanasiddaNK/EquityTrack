@@ -32,13 +32,7 @@ app.use("/api/v1/stocks", stockRoute);
 
 const PORT = process.env.PORT || 10000;
 
-const server = http.createServer(app);
 
-// Configure server timeouts
-server.keepAliveTimeout = 120000; // 2 minutes
-server.headersTimeout = 120000;  // 2 minutes
-
-// Start the server
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
