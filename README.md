@@ -55,11 +55,11 @@
    MONGO_URI = mongodb+srv://<username>:<password>@cluster0.x5e13.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
    ```
   
-4.  Install dependencies:
+4. Build Command :
    ```bash
        npm run build
    ```
 
-5. Start the development server:
+5. Start Command :
    ```bash
      npm run start
