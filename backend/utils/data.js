@@ -156,8 +156,7 @@ const stockDetails = [{
 ]
 
 
-
-export const fetchStockData = async (req, res) => {
+export const fetchStockData = async () => {
   try {
     await Promise.all(
       stockDetails.map(async (stock) => {
@@ -172,6 +171,13 @@ export const fetchStockData = async (req, res) => {
           }
 
           const data = await response.json();
+
+          // Check if the response contains an "Information" field (rate limit message)
+          if (data.Information) {
+            // console.warn(`Rate limit reached for ${stock.ticker}: ${data.Information}`);
+            return; // Skip this stock
+          }
+
           const timeSeries = data['Time Series (Daily)'];
 
           if (!timeSeries) {
@@ -199,6 +205,8 @@ export const fetchStockData = async (req, res) => {
             },
             { upsert: true, new: true }
           );
+
+          console.log(`Stock data for ${stock.ticker} updated successfully.`);
         } catch (err) {
           console.error(`Error processing stock ${stock.ticker}:`, err);
           // Skip this stock if there's an error during processing
@@ -207,12 +215,9 @@ export const fetchStockData = async (req, res) => {
     );
 
     // Respond with a success message after processing all stocks
-    res.status(200).json({ success: true, message: "Stock data processed successfully" });
-  } 
-  catch (error) {
-    console.error("Error updating stock data:", error);
-    res.status(500).json({ success: false, error: "An unexpected error occurred while processing stock data" });
+    console.log("Stock data processed successfully");
+  } catch (error) {
+    console.log("An unexpected error occurred while processing stock data");
   }
 };
-
 
