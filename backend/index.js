@@ -8,6 +8,7 @@ import connectDB from "./utils/db.js";
 import userRoute from "./routes/user.route.js";
 import stockRoute from "./routes/stock.route.js";
 import './cronJobs/stockCron.js';
+import { fetchStockData } from "./utils/data.js";
 import path from "path";
 const __dirname = path.resolve()
 
@@ -29,11 +30,16 @@ app.use(cookieParser());
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/stocks", stockRoute);
 
+const fetchStockDataOnStart = async () => {
+    console.log("Fetching stock data as the backend starts...");
+    const result = await fetchStockData();
+};
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT,'0.0.0.0', ()=>{
     connectDB();
     console.log(`server running at port ${PORT}`);
+     fetchStockDataOnStart();
 })
 
 if(process.env.NODE_ENV === 'production') {
