@@ -4,13 +4,33 @@ import  {Stock}  from '../models/stock.model.js';
 import  {UserStock}  from '../models/userStock.model.js';
 import  {User}  from '../models/user.model.js';
 import {DailyStock} from '../models/dailyStock.model.js';
+import moment from "moment-timezone";
 
+const isMarketOpen = () => {
+  const now = moment.tz("America/New_York"); // Current time in Eastern Time
+  const dayOfWeek = now.day(); // 0 (Sunday) to 6 (Saturday)
+  const hour = now.hour();
+  const minute = now.minute();
 
-const API_KEY = process.env.ALPHA_VANTAGE_API_KEY;
+  // Regular trading hours: Monday to Friday, 9:30 AM to 4:00 PM ET
+  const isWeekday = dayOfWeek >= 1 && dayOfWeek <= 5; // Monday to Friday
+  const isDuringHours =
+    (hour > 9 || (hour === 9 && minute >= 30)) && hour < 16; // 9:30 AM to 4:00 PM
+
+  return isWeekday && isDuringHours;
+};
+
 
 
 export const addStock = async (req, res) => {
+
   try {
+
+    if (!isMarketOpen()) {
+      return res.status(400).json({ success: false, error: 'Stock market is closed, try again during market hours.' });
+    }
+
+
     const { userId } = req.params;
     const { name, ticker, shares, avg_price, mkt_price } = req.body;
 
@@ -118,6 +138,11 @@ export const addStock = async (req, res) => {
 
 export const sellStocks = async (req, res) => {
   try {
+
+    if (!isMarketOpen()) {
+      return res.status(400).json({ success: false, error: 'Stock market is closed, try again during market hours.' });
+    }
+
     const { userId } = req.params;
     const { quantity, stockTicker, currentPrice } = req.body;
 
@@ -211,13 +236,20 @@ export const getStocks = async (req, res) => {
   const getRandomPrice = (low, high) => (Math.random() * (high - low) + low).toFixed(2);
 
   const transformStocks = (stocks) => {
-    return stocks.map((stock, index) => ({
-      id: (index + 1).toString(),
-      name: stock.name,
-      ticker: stock.ticker.toUpperCase(),
-      avg_price: getRandomPrice(parseFloat(stock.low), parseFloat(stock.high)),
-    }));
+    return stocks.map((stock, index) => {
+      const avgPrice = !isMarketOpen()
+      ? ((parseFloat(stock.low) + parseFloat(stock.high)) / 2).toFixed(2) // Use static average if market is closed
+      : getRandomPrice(parseFloat(stock.low), parseFloat(stock.high)).toFixed(2); // Generate random price if market is open
+
+      return {
+        id: (index + 1).toString(),
+        name: stock.name,
+        ticker: stock.ticker.toUpperCase(),
+        avg_price: avgPrice,
+      };
+    });
   };
+  
 
   const updateOwnedStocks = (ownedStocks, availableStocks) => {
 
@@ -259,7 +291,6 @@ export const getStocks = async (req, res) => {
    
     const stocks = await DailyStock.find({});
 
-
     // Transform the stock data to include average prices
     const availableStocks = transformStocks(stocks);
 
@@ -273,7 +304,7 @@ export const getStocks = async (req, res) => {
     });
 
     if (!user) {
-      console.log(`User with ID ${userId} not found.`);
+      //console.log(`User with ID ${userId} not found.`);
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
@@ -282,8 +313,6 @@ export const getStocks = async (req, res) => {
 
     // Save the updated user data
     await user.save();
-
-
     const ownedStocks = user.stocks.sort((a, b) => b.returnsPercentage - a.returnsPercentage);
 
 
