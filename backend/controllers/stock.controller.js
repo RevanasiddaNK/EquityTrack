@@ -233,7 +233,13 @@ export const sellStocks = async (req, res) => {
 
 export const getStocks = async (req, res) => {
 
-  const getRandomPrice = (low, high) => (Math.random() * (high - low) + low).toFixed(2);
+  const getRandomPrice = (low, high) => {
+    if (typeof low !== 'number' || typeof high !== 'number') {
+      throw new Error('Low and high values must be numbers');
+    }
+    const randomPrice = Math.random() * (high - low) + low;
+    return parseFloat(randomPrice.toFixed(2)); // Ensures the result is a number
+  };
 
   const transformStocks = (stocks) => {
     return stocks.map((stock, index) => {
