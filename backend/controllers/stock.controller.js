@@ -8,18 +8,19 @@ import moment from "moment-timezone";
 
 const isMarketOpen = () => {
   const now = moment.tz("America/New_York"); // Current time in Eastern Time
-  const dayOfWeek = now.day(); // 0 (Sunday) to 6 (Saturday)
-  const hour = now.hour();
-  const minute = now.minute();
+  const nowInIST = now.clone().tz("Asia/Kolkata"); // Convert current time to IST
+
+  const dayOfWeek = nowInIST.day(); // 0 (Sunday) to 6 (Saturday)
+  const hour = nowInIST.hour();
+  const minute = nowInIST.minute();
 
   // Regular trading hours: Monday to Friday, 9:30 AM to 4:00 PM ET
   const isWeekday = dayOfWeek >= 1 && dayOfWeek <= 5; // Monday to Friday
   const isDuringHours =
-    (hour > 9 || (hour === 9 && minute >= 30)) && hour < 16; // 9:30 AM to 4:00 PM
+    (hour > 7 || (hour === 7 && minute >= 0)) && hour < 13; // 7:00 AM to 1:30 PM IST
 
   return isWeekday && isDuringHours;
 };
-
 
 
 export const addStock = async (req, res) => {
