@@ -9,7 +9,7 @@ export const register = async(req, res) => {
         // Check if any required field is missing
         if (!fullname || !email) {
             return res.status(400).json({
-                message: "Required All Fileds",
+                error: "Required All Fileds",
                 success: false,
             });
         }
@@ -17,7 +17,7 @@ export const register = async(req, res) => {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({
-                message: 'User already exists with this email.',
+                error : 'User already exists with this email.',
                 success: false,
             });
         }
@@ -36,11 +36,10 @@ export const register = async(req, res) => {
             user: newUser
         });
     } catch (error) {
-        console.error(error);
+        console.error(error.message);
         return res.status(500).json({
             success: false,
-            message: error.message,
-            false: error
+            error: "Internal Server Error",
         });
     }
 };
@@ -52,7 +51,7 @@ export const login = async(req, res) => {
         if (!email || !password) {
             
             return res.status(400).json({
-                message: "Something is missing",
+                error: "Either email or password is missing",
                 success: false,
             });
         }
@@ -61,7 +60,7 @@ export const login = async(req, res) => {
         if (!user) {
            
             return res.status(400).json({
-                message: "Incorrect email or password.",
+                error : "Incorrect email or password.",
                 success: false,
             });
         }
@@ -70,7 +69,7 @@ export const login = async(req, res) => {
         if (!isPasswordMatch) {
             
             return res.status(400).json({
-                message: "Incorrect email or password.",
+                error: "Incorrect email or password.",
                 success: false,
             });
         }       
@@ -93,16 +92,10 @@ export const login = async(req, res) => {
             });
     } 
     catch (error) {
-        console.error("Error in login route:", {
-            message: error.message,
-            stack: error.stack,
-        });
-
-        // Send detailed error in response
+        console.error(error.message);
         return res.status(500).json({
-            message: "Internal Server Error",
-            error: error.message, // Add error details here
             success: false,
+            error: "Internal Server Error",
         });
     }
 };
@@ -114,7 +107,11 @@ export const logout = async(req, res) => {
             success: true
         })
     } catch (error) {
-        console.log(error);
+        console.error(error.message);
+        return res.status(500).json({
+            success: false,
+            error: "Internal Server Error",
+        });
     }
 };
 
@@ -147,8 +144,11 @@ export const addFunds = async (req, res) => {
   
         return res.status(200).json({ success: true,message: `Successfully added ${amountToAdd} to wallet.`,  walletBalance: user.walletBalance });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ success: false, error: 'An error occurred while adding funds.' });
+        console.error(error.message);
+        return res.status(500).json({
+            success: false,
+            error: "Internal Server Error",
+        });
     }
 };
   
@@ -185,7 +185,10 @@ export const withdrawFunds = async (req, res) => {
   
         return res.status(200).json({ success: true, message: `Successfully withdrew ${amountToWithdraw} from wallet.`,  walletBalance: user.walletBalance});
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ success: false, error: 'An error occurred while withdrawing funds.' });
+        console.error(error.message);
+        return res.status(500).json({
+            success: false,
+            error: "Internal Server Error",
+        });
     }
 };
