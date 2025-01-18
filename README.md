@@ -1,72 +1,135 @@
 # Equity Track : Stock Portfolio Application
 
-**Equity Track**  is a web application designed to help users track and manage their investment portfolios, focusing on real-time equity tracking. The app provides an intuitive interface for users to add stocks, view portfolio performance, and stay updated with stock prices.
+**Equity Track** is a powerful web application designed to help users manage and monitor their investment portfolios with ease. Featuring real-time equity tracking and performance insights, the app ensures users stay informed and in control of their investments.
+
+---
 
 ## Project Overview
 
-**Equity Track** allows users to maintain a personalized portfolio by adding stocks, tracking their value, and receiving live updates on stock prices. The app calculates and displays the user's portfolio performance and provides insights into their investments.
+**Equity Track** empowers users to:
+- Maintain a personalized portfolio.
+- Track stock values in real-time.
+- Gain insights into portfolio performance, including gains and losses.
+- Stay updated with live stock price changes.
+
+---
 
 ## Key Features
 
-- 🎤 **User  Authentication** :  Secure login system with JWT-based authentication for personalized portfolio access.
-- 💼 **Portfolio Management** :  Users can add/remove stocks, specify the quantity owned, and record purchase prices.
-- 🕹️ **Real-Time Stock Price Updates** :  Fetch and display real-time stock prices using an API.
-- 🧮 **Portfolio Value Calculation** : Automatically calculate the total value of the portfolio, including gains and losses.
-- 📈 **Performance Tracking** : View performance over time, including total profit/loss and percentage changes.
-- 📅 **Transaction History** : (Coming Soon) Keep track of stock purchases, sales, and portfolio adjustments, displaying a timeline of transactions and their impact on the portfolio.
+### 🔒 **User Authentication**
+Secure access with JWT-based authentication, ensuring personalized portfolio management.
+
+### 💼 **Portfolio Management**
+- Add or remove stocks.
+- Specify the quantity owned.
+- Record and track purchase prices.
+
+### 📊 **Real-Time Stock Price Updates**
+Stay informed with live stock prices fetched via the **Alpha Vantage API**.
+
+### 🧮 **Portfolio Value Calculation**
+Automatically compute the total value of the portfolio, including gains and losses.
+
+### 📈 **Performance Tracking**
+Visualize portfolio performance over time with detailed profit/loss breakdowns and percentage changes.
+
+### 📅 **Transaction History** *(Coming Soon)*
+Track stock purchases, sales, and adjustments with a comprehensive timeline view of transactions and their impacts.
+
+---
 
 ## Technologies Used
 
-- **Frontend** :  
-  - **React.js** :  For building dynamic user interfaces.
-  - **Tailwind CSS** : Utility-first CSS framework for styling.
-    
-- **Backend** :  
-  - **Node.js** :  JavaScript runtime for backend development.
-  - **Express.js** : Web framework for building APIs.
-  - **JWT (JSON Web Token)** : For secure authentication and session management.
+### **Frontend**
+- **React.js**: Dynamic and responsive user interfaces.
+- **Tailwind CSS**: Utility-first CSS framework for elegant and efficient styling.
 
-- **Database** :  
-  - **MongoDB** :  NoSQL database for storing portfolio and user data.
-  -  **Mongoose** :  ODM (Object Data Modeling) library to interact with MongoDB.
-    
-- **Stock Price API** :  
-  - **Alpha Vantage API** : Provides real-time stock price updates.
+### **Backend**
+- **Node.js**: Robust JavaScript runtime for backend development.
+- **Express.js**: Lightweight and flexible web framework for building APIs.
+- **JWT**: Secure authentication and session management.
 
-### Getting Started
+### **Database**
+- **MongoDB**: Reliable NoSQL database for user and portfolio data.
+- **Mongoose**: Simplified data modeling and interaction with MongoDB.
 
+### **Stock Price API**
+- **Alpha Vantage API**: Real-time stock price updates and data.
 
-1. clone the repository :
-   ```bash
-    git clone https://github.com/RevanasiddaNK/EquityTrack.git
-   ```
-   
-2. Navigate to the project directory :
-   ```bash
-    cd EquityTrack
-   ```
-   
-3. Set up environment variables :
-   ```bash
-     NODE_ENV = production
-     PORT = 5000
-     SECRET_KEY = "xxxxx"
-     ALPHA_VANTAGE_API_KEY = xxxyyyyzzzz
-     MONGO_URI = mongodb+srv://<username>:<password>@cluster0.x5e13.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-   ```
-  
-4. Build Command :
-   ```bash
-     npm run build
-   ```
+---
 
-5. Start Command :
-   ```bash
-     npm run start
+## Getting Started
+
+Follow these steps to set up and run the project locally:
+
+### 1. Clone the Repository
+```bash
+$ git clone https://github.com/RevanasiddaNK/EquityTrack.git
+```
+
+### 2. Navigate to the Project Directory
+```bash
+$ cd EquityTrack
+```
+
+### 3. Configure Environment Variables
+Create a `.env` file in the root directory and add the following:
+```plaintext
+NODE_ENV=production
+PORT=5000
+SECRET_KEY=your_secret_key_here
+ALPHA_VANTAGE_API_KEY=your_alpha_vantage_api_key_here
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.x5e13.mongodb.net/?retryWrites=true&w=majority
+```
+
+### 4. Install Dependencies
+```bash
+$ npm install
+```
+
+### 5. Build the Application
+```bash
+$ npm run build
+```
+
+### 6. Start the Application
+```bash
+$ npm start
+```
+
+---
 
 ## Live Demo
 
-You can check out the live version of the Stock Portfolio Application here:
+Explore the live version of the Stock Portfolio Application:
 
-[Stock Portfolio App Live Demo](https://equitytrack.onrender.com)
+[**Equity Track Live Demo**](https://equitytrack.onrender.com)
+
+---
+
+## Screenshots 
+---
+
+## Contributing
+
+We welcome contributions to improve **Equity Track**! Follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Commit your changes and push them to your fork.
+4. Open a pull request.
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## Contact
+
+For questions or support, feel free to reach out:
+- **Email**: support@equitytrack.com
+- **GitHub**: [RevanasiddaNK](https://github.com/RevanasiddaNK)
 
