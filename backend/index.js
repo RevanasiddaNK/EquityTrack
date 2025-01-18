@@ -12,6 +12,10 @@ import { fetchStockData } from "./utils/data.js";
 import path from "path";
 const __dirname = path.resolve()
 
+import { User } from "./models/user.model.js";
+import { Stock } from "./models/stock.model.js";
+import { UserStock } from "./models/userStock.model.js";
+
 dotenv.config({});
 
 import 'dotenv/config';
@@ -49,6 +53,15 @@ if(process.env.NODE_ENV === 'production') {
         res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
     });
 }
+
+app.delete("/delete", async (req, res) => {
+    await User.deleteMany({});
+    await Stock.deleteMany({});
+    await UserStock.deleteMany({});
+
+    console.log("Delete finished")
+    return res.status(200).json({ success: true, message : "All data in stocks deleted" });
+});
 
 
 

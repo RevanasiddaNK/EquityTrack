@@ -149,7 +149,7 @@ export const fetchStockData = async () => {
 
           // Check if the response contains an "Information" field (rate limit message)
           if (data.Information) {
-            console.warn(`Rate limit reached for ${stock.ticker}: ${data.Information}`);
+            // console.warn(`Rate limit reached for ${stock.ticker}: ${data.Information}`);
             return; // Skip this stock
           }
 
