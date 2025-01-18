@@ -37,7 +37,7 @@ export default function SellForm({ stock, onSubmit, onClose }) {
               {/* Uncomment if you want to include Sell Price input
               <div className="mb-6">
                 <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="sellPrice">
-                  Sell Price ($)
+                  Sell Price (&#8377;)
                 </label>
                 <input
                   id="sellPrice"

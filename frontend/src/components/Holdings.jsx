@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { TrendingUp, TrendingDown, IndianRupee  } from 'lucide-react';
 import SellForm from './SellForm';
 import { useState } from 'react';
 
@@ -26,7 +26,7 @@ export default function Holdings({ portfolio, onBuyMore }) {
   const { user } = useSelector((store) => store.auth);
 
   const handleSellSubmit = async (quantity, sellPrice) => {
-    //console.log(`"Selling ${quantity} shares of ${isSellingStock.name} at $${sellPrice} each`);
+   
     
     if (!isSellingStock) {
       toast.error('No stock selected');
@@ -89,17 +89,17 @@ export default function Holdings({ portfolio, onBuyMore }) {
           <div className="bg-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
             <div className="flex items-center justify-between">
               <h3 className="text-gray-600 text-lg font-semibold">Total Invested</h3>
-              <DollarSign className="text-blue-500 h-6 w-6" />
+              <IndianRupee className="text-blue-500 h-6 w-6" />
             </div>
-            <p className="text-3xl font-bold text-gray-900">${totalInvested.toFixed(2)}</p>
+            <p className="text-3xl font-bold text-gray-900">&#8377;{totalInvested.toFixed(2)}</p>
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
             <div className="flex items-center justify-between">
               <h3 className="text-gray-600 text-lg font-semibold">Current Value</h3>
-              <DollarSign className="text-green-500 h-6 w-6" />
+              <IndianRupee  className="text-green-500 h-6 w-6" />
             </div>
-            <p className="text-3xl font-bold text-gray-900">${currentValue.toFixed(2)}</p>
+            <p className="text-3xl font-bold text-gray-900">&#8377;{currentValue.toFixed(2)}</p>
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
@@ -112,7 +112,7 @@ export default function Holdings({ portfolio, onBuyMore }) {
               )}
             </div>
             <p className={`text-3xl font-bold ${totalReturns >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-              ${totalReturns.toFixed(2)} ({returnsPercentage.toFixed(2)}%)
+            &#8377;{totalReturns.toFixed(2)} ({returnsPercentage.toFixed(2)}%)
             </p>
           </div>
         </div>
@@ -140,11 +140,11 @@ export default function Holdings({ portfolio, onBuyMore }) {
             </div>
           </td>
           <td className="px-6 py-4">{stock.shares}</td>
-          <td className="px-6 py-4">${stock.avg_price}</td>
-          <td className="px-6 py-4">${stock.mkt_price}</td>
+          <td className="px-6 py-4">&#8377;{stock.avg_price}</td>
+          <td className="px-6 py-4">&#8377;{stock.mkt_price}</td>
           <td className="px-6 py-4">
             <span className={stock.returns && stock.returns >= 0 ? 'text-green-500' : 'text-red-500'}>
-              ${stock.returns?.toFixed(2)} ({stock.returnsPercentage?.toFixed(2)}%)
+            &#8377;{stock.returns?.toFixed(2)} ({stock.returnsPercentage?.toFixed(2)}%)
             </span>
           </td>
           <td className="px-6 py-4 flex space-x-2">

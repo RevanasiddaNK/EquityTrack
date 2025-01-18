@@ -27,7 +27,7 @@ export default function StockList({ stocks, onBuy, searchQuery, onSearchChange }
               <p className="text-gray-500 text-sm">{stock.ticker}</p>
             </div>
             <span className={`text-xl font-bold ${stock.priceChange > 0 ? 'text-green-600' : 'text-red-600'}`}>
-              ${stock.avg_price}
+            &#8377;{stock.avg_price}
             </span>
           </div>
           <button

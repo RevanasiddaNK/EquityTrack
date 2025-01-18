@@ -76,7 +76,7 @@ export default function UserProfile({ onAddFunds, onWithdraw, userEmail }) {
         >
           <div className="flex items-center">
             <Wallet className="h-5 w-5 mr-2 " />
-            <span className="text-lg font-semibold">${walletBalance?.toFixed(2) || -1000}</span>
+            <span className="text-lg font-semibold">&#8377;{walletBalance?.toFixed(2) || -1000}</span>
           </div>
           <ChevronDown className="h-4 w-4" />
         </button>
@@ -121,7 +121,7 @@ export default function UserProfile({ onAddFunds, onWithdraw, userEmail }) {
               <form onSubmit={handleTransaction} className="p-6 bg-white rounded-lg shadow-md max-w-md mx-auto transition-transform duration-200 hover:scale-105 hover:shadow-lg">
                   <div className="mb-6">
                     <label className="block text-gray-700 text-sm font-semibold mb-2">
-                      Amount ($)
+                      Amount (&#8377;)
                     </label>
                     <input
                       type="number"

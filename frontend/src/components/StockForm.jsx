@@ -39,7 +39,7 @@ export default function StockForm({ stock, onSubmit, onClose }) {
                   {/* Uncomment if you want to include Buy Price input
                   <div className="mb-6">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="buyPrice">
-                      Buy Price ($)
+                      Buy Price (&#8377;)
                     </label>
                     <input
                       id="buyPrice"
