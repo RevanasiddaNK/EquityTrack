@@ -130,6 +130,6 @@ This project is licensed under the [MIT License](LICENSE).
 ## Contact
 
 For questions or support, feel free to reach out:
-- **Email**: support@equitytrack.com
+- **Email**: nmrevanasiddarhbk@gmail.com
 - **GitHub**: [RevanasiddaNK](https://github.com/RevanasiddaNK)
 
