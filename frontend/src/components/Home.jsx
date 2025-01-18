@@ -122,7 +122,7 @@ function Home() {
         setSelectedStock(null);
         dispatch(setOwnedStocks([]))
       } else {
-        toast.error(res?.data?.message || 'Failed to add stock');
+        toast.error(res?.data?.error || 'Failed to add stock');
       }
     } catch (error) {
       console.error('Error during stock purchase:', error);
