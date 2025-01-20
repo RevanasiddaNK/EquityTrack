@@ -123,12 +123,12 @@ export default function Holdings({ portfolio, onBuyMore }) {
     <table className="min-w-full divide-y divide-gray-200">
       <thead className="bg-gray-50">
         <tr>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shares</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Buy Price</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Price</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Returns</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          <th className="px-6 py-3 text-left text-md font-bold text-gray-700 uppercase tracking-wider">Stock</th>
+          <th className="px-6 py-3 text-left text-md font-bold text-gray-700 uppercase tracking-wider">Shares</th>
+          <th className="px-6 py-3 text-left text-md font-bold text-gray-700 uppercase tracking-wider">AVG. Price</th>
+          <th className="px-6 py-3 text-left text-md font-bold text-gray-700 uppercase tracking-wider">MKT. Price</th>
+          <th className="px-6 py-3 text-left text-md font-bold text-gray-700 uppercase tracking-wider">Total Returns</th>
+          <th className="px-6 py-3 text-left text-md font-bold text-gray-700 uppercase tracking-wider">Actions</th>
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-200">
