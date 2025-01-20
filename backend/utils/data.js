@@ -166,7 +166,7 @@ export const fetchStockData = async () => {
 
           // Proceed with upserting the stock data only if fetching was successful
           await DailyStock.findOneAndUpdate(
-            { ticker: stock.ticker, date: previousDay },
+            { ticker: stock.ticker },
             {
               ticker: stock.ticker,
               name: stock.name,
