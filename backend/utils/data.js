@@ -2,16 +2,6 @@ import {DailyStock} from '../models/dailyStock.model.js';
 import { Stock } from '../models/stock.model.js';
 import connectDB from './db.js';
 
-
-
-/*
-connectDB();
-await DailyStock.deleteMany({})
-const data = await DailyStock.insertMany(stockDetails);
-console.log(data);
-*/
-
-
 export const fetchStockData = async () => {
   
   try {
