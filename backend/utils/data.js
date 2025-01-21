@@ -1,9 +1,9 @@
 import {DailyStock} from '../models/dailyStock.model.js';
 import { Stock } from '../models/stock.model.js';
-import connectDB from './db.js';
+// import connectDB from './db.js';
+
 
 export const fetchStockData = async () => {
-  
   try {
   const stockDetails = await Stock.find({});
     await Promise.all(

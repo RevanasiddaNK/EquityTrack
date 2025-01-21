@@ -17,7 +17,7 @@ const isMarketOpen = () => {
   const isDuringHours =
     (hour > 9 || (hour === 9 && minute >= 15)) && (hour < 15 || (hour === 15 && minute < 30)); // 9:15 AM to 3:30 PM
 
-  return isWeekday && isDuringHours;
+  return (isWeekday && isDuringHours);
 };
 
 

@@ -8,7 +8,7 @@ const isAuthenticated = async (req, res, next) => {
 
         if (!token) {
             return res.status(401).json({
-                message: 'User not authenticated',
+                error: 'User not authenticated',
                 success: false,
             });
         }
@@ -17,7 +17,7 @@ const isAuthenticated = async (req, res, next) => {
         const decode = jwt.verify(token, process.env.SECRET_KEY);
         if (!decode) {
             return res.status(401).json({
-                message: 'Invalid token',
+                error: 'Invalid token',
                 success: false,
             });
         }
@@ -27,7 +27,7 @@ const isAuthenticated = async (req, res, next) => {
     } catch (error) {
         console.error(error);
         return res.status(500).json({
-            message: 'Internal server error',
+            error: 'Internal server error',
             success: false,
         });
     }
