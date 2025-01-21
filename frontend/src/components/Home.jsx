@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import Holdings from './Holdings';
 import StockForm from './StockForm';
 import UserProfile from './UserProfile';
+import Footer from './Footer';
 import { useNavigate } from 'react-router-dom';
 import useGetStocks from '../hooks/useGetStocks';
 import { useDispatch, useSelector } from 'react-redux'
@@ -308,6 +309,8 @@ function Home() {
         </button>
       </div>
     </div>
+    
+    <Footer/>
 
   </div>
 
