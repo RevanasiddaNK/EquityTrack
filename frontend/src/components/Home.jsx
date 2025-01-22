@@ -227,48 +227,48 @@ function Home() {
 
   <div className="min-h-screen bg-gray-100">
 
-    <nav className="bg-white shadow-lg">
-      <div className="max-w-7xl mx-auto px-6 py-6">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-         
-          <div className="flex items-center space-x-3">
-            <TrendingUp className="h-12 w-12 text-blue-500 transform transition duration-300 hover:scale-110" />
-            <span className="text-4xl font-bold text-grey-700 tracking-tight hover:text-grey-800 transition duration-200">
-              EquityTrack
-            </span>
-          </div>
+ 
 
-        
-            <div className="ml-10 hidden md:flex space-x-6">
-              <button
-                onClick={() => setView('home')} 
-                className={`inline-flex items-center px-4 py-2 text-lg  font-semibold rounded-md transition duration-200 ${
-                  view === 'home' ? 'border-b-2 border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Home
-              </button>
-              <button
-                onClick={() => setView('Holdings')}
-                className={`inline-flex items-center px-4 py-2 text-lg font-semibold rounded-md transition duration-200 ${
-                  view === 'Holdings' ? 'border-b-2 border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Holdings
-              </button>
-            </div>
-          </div>
-          <div className="flex items-center">
-            <UserProfile
-              walletBalance={walletBalance}
-              onAddFunds={handleAddFunds}
-              onWithdraw={handleWithdraw}
-              userEmail={user?.email}
-            />
-          </div>
+    <nav className="bg-white shadow-md">
+  <div className="max-w-7xl mx-auto px-4 py-4"> {/* Reduced padding */}
+    <div className="flex justify-between items-center h-12"> {/* Reduced height */}
+      <div className="flex items-center">
+        <div className="flex items-center space-x-3">
+          <TrendingUp className="h-10 w-10 text-blue-500 transform transition duration-300 hover:scale-110" /> {/* Reduced icon size */}
+          <span className="text-3xl font-bold text-gray-700 tracking-tight hover:text-gray-800 transition duration-200"> {/* Reduced font size */}
+            EquityTrack
+          </span>
+        </div>
+
+        <div className="ml-8 hidden md:flex space-x-4"> {/* Adjusted spacing */}
+          <button
+            onClick={() => setView('home')}
+            className={`inline-flex items-center px-3 py-1.5 text-lg font-semibold rounded-md transition duration-200 ${
+              view === 'home' ? 'border-b-2 border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Home
+          </button>
+          <button
+            onClick={() => setView('Holdings')}
+            className={`inline-flex items-center px-3 py-1.5 text-lg font-semibold rounded-md transition duration-200 ${
+              view === 'Holdings' ? 'border-b-2 border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Holdings
+          </button>
         </div>
       </div>
+      <div className="flex items-center">
+        <UserProfile
+          walletBalance={walletBalance}
+          onAddFunds={handleAddFunds}
+          onWithdraw={handleWithdraw}
+          userEmail={user?.email}
+        />
+      </div>
+    </div>
+  </div>
     </nav>
 
     <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
