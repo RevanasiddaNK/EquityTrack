@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
     walletBalance : { 
         type: Number, 
         required: true, 
-        default: 0
+        default: 1000
     }
 });
 
