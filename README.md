@@ -108,6 +108,11 @@ Explore the live version of the Stock Portfolio Application:
 ---
 
 ## Screenshots 
+
+![image](https://github.com/user-attachments/assets/5a027610-4d8f-4c0c-8599-4bc0cc82d027)
+![image](https://github.com/user-attachments/assets/1efc93b9-586e-4f56-b0fa-aea3b75f0628)
+![image](https://github.com/user-attachments/assets/68b67dcd-9413-46c7-b1ba-dc07dd3af8b2)
+
 ---
 
 ## Contributing
