@@ -37,7 +37,7 @@ app.use(cookieParser());
 
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'https://equitytrack.onrender.com',
   credentials: true // if you use cookies
 }));
 
@@ -48,7 +48,7 @@ app.use("/api/v1/stocks", stockRoute);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // frontend
+    origin: "https://equitytrack.onrender.com", // frontend
     methods: ["GET", "POST"],
     credentials: true,
   },
