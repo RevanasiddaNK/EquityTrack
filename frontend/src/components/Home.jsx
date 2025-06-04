@@ -121,7 +121,7 @@ function Home() {
         toast.success(res.data.message);
         dispatch(setWalletBalance(res.data.walletBalance));
         setSelectedStock(null);
-        dispatch(setOwnedStocks([]))
+        dispatch(setOwnedStocks([]));
       } else {
         toast.error(res?.data?.error || 'Failed to add stock');
       }
@@ -308,7 +308,7 @@ function Home() {
           </div>
         </div>
 
-        <Footer /> {/* This will always be at the bottom */}
+        <Footer />
       </div>
 
   );

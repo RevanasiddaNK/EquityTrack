@@ -1,12 +1,11 @@
 import express from "express";
 import isAuthenticated from "../middlewares/isAuthenticated.js";  // Ensure the path is correct
-import { addStock, sellStocks, getStocks} from "../controllers/stock.controller.js";  // Ensure the path is correct
+import { addStock, sellStocks} from "../controllers/stock.controller.js";  // Ensure the path is correct
 import {fetchStockData} from "../utils/data.js"
 
 const router = express.Router();
 
-// Get stocks for a specific user
-router.route("/user/:userId").get(getStocks);
+
 
 // Add stock to user's portfolio
 router.route("/add/:userId").post(isAuthenticated, addStock);

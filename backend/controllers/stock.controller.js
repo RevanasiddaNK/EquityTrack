@@ -3,23 +3,7 @@ import fetch from 'node-fetch';
 import  {Stock}  from '../models/stock.model.js';
 import  {UserStock}  from '../models/userStock.model.js';
 import  {User}  from '../models/user.model.js';
-import {DailyStock} from '../models/dailyStock.model.js';
-import moment from "moment-timezone";
-
-const isMarketOpen = () => {
-  const now = moment.tz("Asia/Kolkata"); // Current time in Indian Standard Time (IST)
-  const dayOfWeek = now.day(); // 0 (Sunday) to 6 (Saturday)
-  const hour = now.hour();
-  const minute = now.minute();
-
-  // Regular trading hours: Monday to Friday, 9:15 AM to 3:30 PM IST
-  const isWeekday = dayOfWeek >= 1 && dayOfWeek <= 5; // Monday to Friday
-  const isDuringHours =
-    (hour > 9 || (hour === 9 && minute >= 15)) && (hour < 15 || (hour === 15 && minute < 30)); // 9:15 AM to 3:30 PM
-
-  return (isWeekday && isDuringHours);
-};
-
+import { isMarketOpen } from '../utils/marketOpenCheck.js'; 
 
 export const addStock = async (req, res) => {
 
@@ -230,107 +214,9 @@ export const sellStocks = async (req, res) => {
   }
 };
 
-export const getStocks = async (req, res) => {
-
-  const getRandomPrice = (low, high) => {
-    if (typeof low !== 'number' || typeof high !== 'number') {
-      throw new Error('Low and high values must be numbers');
-    }
-    const randomPrice = Math.random() * (high - low) + low;
-    return parseFloat(randomPrice.toFixed(2)); // Ensures the result is a number
-  };
-
-  const transformStocks = (stocks) => {
-    return stocks.map((stock, index) => {
-      const avgPrice = !isMarketOpen()
-      ? ((parseFloat(stock.low) + parseFloat(stock.high)) / 2).toFixed(2) // Use static average if market is closed
-      : getRandomPrice(parseFloat(stock.low), parseFloat(stock.high)).toFixed(2); // Generate random price if market is open
-
-      return {
-        id: (index + 1).toString(),
-        name: stock.name,
-        ticker: stock.ticker.toUpperCase(),
-        avg_price: avgPrice,
-      };
-    });
-  };
-  
-
-  const updateOwnedStocks = (ownedStocks, availableStocks) => {
-
-    
-    const stockMap = new Map(
-      availableStocks.map((stock) => [stock.ticker, stock])
-    );
-    
-  
-    
-
-    return ownedStocks.map((ownedStock) => {
-      const ownedTicker = ownedStock?.stock?.ticker?.toUpperCase();
-      const currentStock = stockMap.get(ownedTicker);
-
-      if (currentStock) {
-        const mktPrice = parseFloat(currentStock.avg_price).toFixed(2);
-        const currentValue = (mktPrice * ownedStock.shares).toFixed(2);
-        const returns = (currentValue - ownedStock.invested).toFixed(2);
-        const returnsPercentage = ((returns / ownedStock.invested) * 100).toFixed(2);
-
-        ownedStock.set({
-          mkt_price: mktPrice,
-          current: currentValue,
-          returns,
-          returnsPercentage,
-        });
-      } else {
-        console.log(`Stock ${ownedTicker} not found in available stocks`);
-      }
-
-      return ownedStock;
-    });
-  };
-
-  try {
-
-    const { userId } = req.params;
-   
-    const stocks = await DailyStock.find({});
-
-    // Transform the stock data to include average prices
-    const availableStocks = transformStocks(stocks);
-
-    // Fetch the user and their owned stocks
-    const user = await User.findById(userId).populate({
-      path: "stocks", // Populate the `stocks` field in `User`
-      populate: {
-        path: "stock", 
-        model: "Stock",
-      },
-    });
-
-    if (!user) {
-      //console.log(`User with ID ${userId} not found.`);
-      return res.status(404).json({ success: false, error: "User not found" });
-    }
-
-    // Update owned stocks with current market data
-    user.stocks = updateOwnedStocks(user.stocks, availableStocks);
-
-    // Save the updated user data
-    await user.save();
-    const ownedStocks = user.stocks.sort((a, b) => b.returnsPercentage - a.returnsPercentage);
 
 
-    return res.status(200).json({
-      success: true,
-      availableStocks,
-      ownedStocks
-    });
-  } catch (error) {
-    console.error("Error fetching and updating stocks:", error);
-    return res.status(500).json({ success: false, error: "Internal Server Error"});
-  }
-};
+
 
 
 

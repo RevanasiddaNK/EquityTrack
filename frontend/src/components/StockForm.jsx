@@ -36,22 +36,6 @@ export default function StockForm({ stock, onSubmit, onClose }) {
                   </p>
                 </div>
 
-                  {/* Uncomment if you want to include Buy Price input
-                  <div className="mb-6">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="buyPrice">
-                      Buy Price (&#8377;)
-                    </label>
-                    <input
-                      id="buyPrice"
-                      type="number"
-                      step="0.01"
-                      value={buyPrice}
-                      onChange={(e) => setBuyPrice(Number(e.target.value))}
-                      className="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 placeholder-gray-400 hover:border-blue-400"
-                    />
-                  </div>
-                  */}
-
                   <div className="flex justify-end gap-2">
                     <button
                       type="button"

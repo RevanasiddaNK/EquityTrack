@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux'
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { socket } from "../App";
+
 import { setAvailableStocks, setOwnedStocks, setError, setLoading } from '../redux/stocksSlice';
-import { STOCK_API_END_POINT } from '@/utils/constant'
 
 const useGetStocks = () => {
   const { user } = useSelector((store) => store.auth);
@@ -10,40 +10,45 @@ const useGetStocks = () => {
   const [error, setErrorState] = useState(null);
   const dispatch = useDispatch();
 
-  const fetchAllStocks = async () => {
-          try {
-                setLoadingState(true);
-                const res = await axios.get(`${STOCK_API_END_POINT}/user/${user._id}`, { withCredentials: true });
-                if (res?.data?.availableStocks && res?.data?.ownedStocks) {
-                  dispatch(setAvailableStocks(res.data.availableStocks));
-                  dispatch(setOwnedStocks(res.data.ownedStocks));
-                } else {
-                  setErrorState('Stocks data is missing in the response');
-                  dispatch(setError('Stocks data is missing'));
-                }
-          }
-          catch (error) {
-                  setErrorState("Failed to fetch stocks");
-                  dispatch(setError("Failed to fetch stocks"));
-                  console.error('Fetch error:', error);
-          }
-          finally{
-                  setLoadingState(false);
-                  dispatch(setLoading(false));
-          }
-  };
-
   useEffect(() => {
-    fetchAllStocks(); // Initial fetch when the component mounts
+    if (!user?._id) return;
 
-    const interval = setInterval(() => {
-      fetchAllStocks(); 
-    }, 1000); 
+    dispatch(setLoading(true));
+    setLoadingState(true);
 
-    // Cleanup interval on component unmount
-    return () => clearInterval(interval);
-  }, [dispatch]); // Empty dependency array means this useEffect runs on mount and whenever dispatch changes
-  
+    // Emit request to server to join user's room or request initial data
+    socket.emit('subscribeToStocks', { userId: user._id });
+
+    // Listen for stock data from server
+    socket.on('stockData', (data) => {
+      if (data?.availableStocks && data?.ownedStocks) {
+        dispatch(setAvailableStocks(data.availableStocks));
+        dispatch(setOwnedStocks(data.ownedStocks));
+        setErrorState(null);
+      } else {
+        const errMsg = 'Invalid stock data from socket';
+        dispatch(setError(errMsg));
+        setErrorState(errMsg);
+      }
+      dispatch(setLoading(false));
+      setLoadingState(false);
+    });
+
+    socket.on('connect_error', (err) => {
+      const errMsg = 'Socket connection failed';
+      console.error(errMsg, err);
+      dispatch(setError(errMsg));
+      setErrorState(errMsg);
+      dispatch(setLoading(false));
+      setLoadingState(false);
+    });
+
+    return () => {
+      socket.off('stockData');
+      socket.emit('unsubscribeFromStocks', { userId: user._id }); // Optional: clean up on server
+    };
+  }, [user, dispatch]);
+
 };
 
 export default useGetStocks;

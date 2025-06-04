@@ -175,66 +175,7 @@ export default function Holdings({ portfolio, onBuyMore }) {
     />
   )}
       </div>
-
-
-      {/* <div className="bg-white rounded-lg shadow-md overflow-hidden">
-  <table className="min-w-full divide-y divide-gray-200">
-    <thead className="bg-gray-50">
-      <tr>
-        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shares</th>
-        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Buy Price</th>
-        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Price</th>
-        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Returns</th>
-        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-      </tr>
-    </thead>
-    <tbody className="divide-y divide-gray-200">
-      {portfolio.map((stock) => (
-        <tr key={stock._id} className="hover:bg-gray-100 transition-colors">
-          <td className="px-6 py-4">
-            <div>
-              <div className="font-medium text-gray-900">{stock.stock.name}</div>
-              <div className="text-gray-500">{stock.stock.ticker}</div>
-            </div>
-          </td>
-          <td className="px-6 py-4">{stock.shares}</td>
-          <td className="px-6 py-4">&#8377;{stock.avg_price}</td>
-          <td className="px-6 py-4">&#8377;{stock.mkt_price}</td>
-          <td className="px-6 py-4">
-            <span className={stock.returns && stock.returns >= 0 ? 'text-green-500' : 'text-red-500'}>
-            &#8377;{stock.returns?.toFixed(2)} ({stock.returnsPercentage?.toFixed(2)}%)
-            </span>
-          </td>
-          <td className="px-6 py-4 flex space-x-2">
-            <button
-              onClick={() => onBuyMore(stock)}
-              className="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-4 py-2 transition duration-200"
-            >
-              Buy
-            </button>
-            <button
-              onClick={() => { handleSellClickedStock(stock); }}
-              className="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-4 py-2 transition duration-200"
-            >
-              Sell
-            </button>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-  {isSellingStock && (
-    <SellForm
-      stock={isSellingStock}
-      onSubmit={handleSellSubmit}
-      onClose={handleClose}
-    />
-  )}
-      </div> */}
-
       
-
     </div>
     
   );

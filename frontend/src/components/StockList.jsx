@@ -6,7 +6,7 @@ export default function StockList({ stocks, onBuy, searchQuery, onSearchChange }
 
 <div className="p-6 bg-gray-100 min-h-screen">
   <div className="mb-6 relative">
-    <div className="relative z-10">
+    <div className="relative z-1">
       <input
         type="text"
         placeholder="Search stocks..."
