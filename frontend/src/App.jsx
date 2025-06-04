@@ -8,7 +8,10 @@ import Home from './components/Home';
 import { io } from 'socket.io-client';
 
 // ✅ Named export
-export const socket = io('http://localhost:5000');
+export const socket = io("https://equitytrack.onrender.com", {
+  withCredentials: true,
+});
+
 
 const appRouter = createBrowserRouter([
   {

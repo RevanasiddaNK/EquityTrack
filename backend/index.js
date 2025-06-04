@@ -37,9 +37,12 @@ app.use(cookieParser());
 
 
 app.use(cors({
-  origin: 'https://equitytrack.onrender.com',
-  credentials: true // if you use cookies
+  origin: process.env.NODE_ENV === 'production' 
+    ? 'https://equitytrack.onrender.com'
+    : 'http://localhost:5173',
+  credentials: true,
 }));
+
 
 
 
@@ -48,11 +51,14 @@ app.use("/api/v1/stocks", stockRoute);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://equitytrack.onrender.com", // frontend
+    origin: process.env.NODE_ENV === 'production'
+      ? 'https://equitytrack.onrender.com'
+      : 'http://localhost:5173',
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
+
 
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
