@@ -35,10 +35,6 @@ Stay informed with real-time stock prices using **Alpha Vantage API**, pushed dy
 ### 🧮 **Portfolio Value Calculation**
 Automatically compute the total value of the portfolio, including gains and losses.
 
-### 📈 **Performance Tracking**
-Visualize portfolio performance over time with detailed profit/loss breakdowns and percentage changes.
----
-
 ## Technologies Used
 
 ### **Frontend**
