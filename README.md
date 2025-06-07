@@ -1,7 +1,3 @@
-Here's the **updated version** of your `README.md` file after integrating **Socket.IO** for real-time communication:
-
----
-
 # Equity Track : Stock Portfolio Application
 
 **Equity Track** is a powerful web application designed to help users manage and monitor their investment portfolios with ease. Featuring real-time equity tracking and performance insights, the app ensures users stay informed and in control of their investments.
