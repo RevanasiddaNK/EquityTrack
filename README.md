@@ -64,12 +64,12 @@ Follow these steps to set up and run the project locally:
 
 ### 1. Clone the Repository
 ```bash
-$ git clone https://github.com/RevanasiddaNK/EquityTrack.git
+git clone https://github.com/RevanasiddaNK/EquityTrack.git
 ```
 
 ### 2. Navigate to the Project Directory
 ```bash
-$ cd EquityTrack
+cd EquityTrack
 ```
 
 ### 3. Configure Environment Variables
@@ -84,17 +84,17 @@ MONGO_URI=mongodb+srv://<username>:<password>@cluster0.x5e13.mongodb.net/?retryW
 
 ### 4. Install Dependencies
 ```bash
-$ npm install
+npm install
 ```
 
 ### 5. Build the Application
 ```bash
-$ npm run build
+npm run build
 ```
 
 ### 6. Start the Application
 ```bash
-$ npm start
+npm start
 ```
 
 ---
